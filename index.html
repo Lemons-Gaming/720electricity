@@ -24,45 +24,58 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for Retro & Hebrew vibes -->
+    <!-- Google Fonts for Retro Arcade & Hebrew vibes -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Mono+One&family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
         body {
             font-family: 'Rubik', sans-serif;
-            background-color: #03010a;
+            background-color: #000;
+            /* Classic arcade scanlines and grid */
             background-image: 
-                radial-gradient(circle at 50% 50%, #110924 0%, #020105 100%),
-                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), 
-                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 100%, 100% 4px, 4px 100%;
+                linear-gradient(rgba(0, 255, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.5) 50%);
+            background-size: 20px 20px, 20px 20px, 100% 4px;
             min-height: 100vh;
             color: #fff;
-        }
-
-        /* Arcade CRT Screen effect and frame */
-        .arcade-cabinet {
-            border: 6px solid #4c1d95;
-            box-shadow: 
-                0 0 0 4px #1e1b4b,
-                0 0 25px #a855f7,
-                inset 0 0 30px rgba(0,0,0,0.95);
-            background: #070311;
+            overflow-x: hidden;
         }
 
         .retro-title {
             font-family: 'Rubik Mono One', sans-serif;
-            text-shadow: 3px 3px 0px #db2777, -1px -1px 0px #2563eb, 0 0 15px #f472b6;
+            text-shadow: 4px 4px 0px #db2777, -2px -2px 0px #2563eb, 0 0 20px #f472b6;
         }
 
-        .retro-sub {
-            font-family: 'Press Start 2P', cursive;
-            color: #38bdf8;
-            text-shadow: 2px 2px 0px #0369a1, 0 0 8px rgba(56, 189, 248, 0.5);
+        .retro-title-sm {
+            font-family: 'Rubik Mono One', sans-serif;
         }
 
         .retro-font-numbers {
             font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Blocky Arcade Window */
+        .retro-window {
+            background-color: #050505;
+            border: 6px solid #fff;
+            box-shadow: 
+                inset -6px -6px 0px rgba(255,255,255,0.2),
+                inset 6px 6px 0px rgba(255,255,255,0.1),
+                12px 12px 0px rgba(0,0,0,0.9),
+                0 0 0 8px #4c1d95;
+            border-radius: 0; /* No rounded corners in 8-bit! */
+        }
+
+        /* CRT Cabinet framing */
+        .arcade-cabinet {
+            border: 8px solid #3b0764;
+            box-shadow: 
+                0 0 0 4px #1e1b4b,
+                0 0 30px #a855f7,
+                inset 0 0 40px rgba(0,0,0,0.95);
+            background: #000;
+            border-radius: 0;
         }
 
         /* 8-bit Pixel Button / Bulb styling */
@@ -70,155 +83,139 @@
             position: relative;
             image-rendering: pixelated;
             border-style: solid;
-            border-width: 4px;
-            transition: all 0.1s ease;
+            border-width: 6px;
+            transition: none; /* Instant snap for retro feel */
+            border-radius: 0;
         }
 
         /* OFF state - Red bevel bulb */
         .pixel-bulb-off {
             background-color: #991b1b;
-            border-color: #f87171 #7f1d1d #7f1d1d #f87171;
-            box-shadow: inset 2px 2px 0px rgba(255,255,255,0.2), 0 4px 0px #450a0a;
+            border-color: #f87171 #450a0a #450a0a #f87171;
+            box-shadow: inset 4px 4px 0px rgba(255,255,255,0.15);
         }
         .pixel-bulb-off:active {
-            transform: translateY(2px);
-            box-shadow: inset 2px 2px 0px rgba(255,255,255,0.2), 0 1px 0px #450a0a;
+            border-color: #450a0a #f87171 #f87171 #450a0a;
+            box-shadow: inset -4px -4px 0px rgba(255,255,255,0.15);
         }
 
         /* ON state - Green glowing bevel bulb */
         .pixel-bulb-on {
             background-color: #10b981;
-            border-color: #a7f3d0 #047857 #047857 #a7f3d0;
+            border-color: #a7f3d0 #064e3b #064e3b #a7f3d0;
             box-shadow: 
-                inset 2px 2px 0px rgba(255,255,255,0.4), 
-                0 4px 0px #064e3b,
+                inset 4px 4px 0px rgba(255,255,255,0.3),
                 0 0 15px #10b981;
         }
         .pixel-bulb-on:active {
-            transform: translateY(2px);
-            box-shadow: inset 2px 2px 0px rgba(255,255,255,0.4), 0 1px 0px #064e3b, 0 0 10px #10b981;
+            border-color: #064e3b #a7f3d0 #a7f3d0 #064e3b;
+            box-shadow: inset -4px -4px 0px rgba(255,255,255,0.3), 0 0 10px #10b981;
         }
 
         /* Board Win Flash Animation */
         @keyframes board-win-flash {
-            0%, 50%, 100% { filter: brightness(1.8) drop-shadow(0 0 20px #10b981); }
+            0%, 50%, 100% { filter: brightness(2) drop-shadow(0 0 30px #10b981); }
             25%, 75% { filter: brightness(1); }
         }
         .board-win-active {
-            animation: board-win-flash 0.3s ease-in-out infinite;
+            animation: board-win-flash 0.3s steps(2, end) infinite;
             pointer-events: none;
         }
 
         /* Suggestion flash for help */
         @keyframes pixel-flash {
-            0%, 100% { border-color: #facc15; box-shadow: 0 0 20px #facc15; }
-            50% { border-color: #ca8a04; box-shadow: 0 0 0px transparent; }
+            0%, 100% { border-color: #fef08a; background-color: #ca8a04; }
+            50% { border-color: #a16207; background-color: #854d0e; }
         }
         .pixel-flash-active {
-            animation: pixel-flash 0.8s infinite;
+            animation: pixel-flash 0.5s steps(2, start) infinite !important;
         }
 
-        /* Retro Controls */
-        .arcade-btn {
-            border-style: solid;
-            border-width: 3px;
-            border-color: #94a3b8 #334155 #334155 #94a3b8;
-            box-shadow: 0 4px 0px #1e293b;
-            transition: all 0.1s;
+        /* Blocky Retro Buttons */
+        .retro-btn {
+            font-family: 'Rubik Mono One', sans-serif;
+            border: 4px solid #fff;
+            box-shadow: 6px 6px 0px rgba(0,0,0,1);
+            border-radius: 0;
+            text-transform: uppercase;
+            transition: none;
         }
-        .arcade-btn:active:not(:disabled) {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0px #1e293b;
+        .retro-btn:active:not(:disabled) {
+            transform: translate(6px, 6px);
+            box-shadow: 0px 0px 0px rgba(0,0,0,1);
         }
-
-        .arcade-btn-pink {
-            background-color: #ec4899;
-            border-color: #fbcfe8 #9d174d #9d174d #fbcfe8;
-            box-shadow: 0 4px 0px #701a34;
-        }
-        .arcade-btn-pink:active:not(:disabled) {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0px #701a34;
+        .retro-btn:disabled {
+            filter: grayscale(100%) opacity(0.5);
+            cursor: not-allowed;
         }
 
-        .arcade-btn-blue {
-            background-color: #3b82f6;
-            border-color: #bfdbfe #1d4ed8 #1d4ed8 #bfdbfe;
-            box-shadow: 0 4px 0px #1e3a8a;
-        }
-        .arcade-btn-blue:active:not(:disabled) {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0px #1e3a8a;
-        }
+        .btn-red { background-color: #dc2626; border-color: #fca5a5 #7f1d1d #7f1d1d #fca5a5; }
+        .btn-cyan { background-color: #0891b2; border-color: #67e8f9 #164e63 #164e63 #67e8f9; }
+        .btn-green { background-color: #16a34a; border-color: #86efac #14532d #14532d #86efac; }
+        .btn-yellow { background-color: #ca8a04; border-color: #fde047 #713f12 #713f12 #fde047; color: #000; }
+        .btn-pink { background-color: #db2777; border-color: #fbcfe8 #831843 #831843 #fbcfe8; }
+        .btn-blue { background-color: #2563eb; border-color: #93c5fd #1e3a8a #1e3a8a #93c5fd; }
+        .btn-purple { background-color: #7e22ce; border-color: #d8b4fe #4c1d95 #4c1d95 #d8b4fe; }
+        .btn-gray { background-color: #475569; border-color: #cbd5e1 #0f172a #0f172a #cbd5e1; }
 
-        .arcade-btn-yellow {
-            background-color: #eab308;
-            border-color: #fef08a #a16207 #a16207 #fef08a;
-            box-shadow: 0 4px 0px #713f12;
-        }
-        .arcade-btn-yellow:active:not(:disabled) {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0px #713f12;
-        }
+        /* Blink utility */
+        @keyframes blink { 50% { opacity: 0; } }
+        .animate-blink { animation: blink 1s steps(1, end) infinite; }
     </style>
 </head>
-<body class="flex flex-col justify-between p-3 md:p-6 select-none">
+<body class="flex flex-col justify-between p-2 md:p-6 select-none">
 
-    <!-- Top Scoreboard -->
-    <header class="w-full max-w-4xl mx-auto mb-4 flex flex-wrap items-center justify-between gap-4 bg-black/60 p-4 rounded-xl border-2 border-slate-800">
+    <!-- Top Scoreboard (Arcade Style) -->
+    <header class="w-full max-w-5xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-4 bg-black p-4 border-4 border-slate-700">
         <div class="text-right">
-            <h1 class="text-2xl md:text-3xl font-black text-pink-500 retro-title tracking-wider">קצר חשמלי</h1>
-            <p class="retro-sub mt-2 text-md md:text-lg" style="font-size: 14px;">הכנה ל-720</p>
+            <h1 class="text-3xl md:text-5xl font-black text-pink-500 retro-title tracking-wider mb-2">קצר חשמלי</h1>
+            <p class="retro-font-numbers text-yellow-300 text-sm md:text-xl text-shadow-sm">הכנה ל-720</p>
         </div>
         
-        <div class="flex items-center gap-6">
+        <div class="flex items-center gap-4 md:gap-8 bg-slate-900 p-3 border-4 border-slate-600">
             <div class="text-center">
-                <div class="text-[10px] md:text-xs text-slate-400 font-bold mb-1">SCORE (ניקוד)</div>
-                <div class="text-lg md:text-2xl font-black text-yellow-400 retro-font-numbers" id="score-display">10000</div>
+                <div class="text-[10px] md:text-xs text-slate-400 retro-title-sm mb-2">SCORE</div>
+                <div class="text-lg md:text-2xl text-yellow-400 retro-font-numbers" id="score-display">10000</div>
             </div>
-            <div class="h-8 w-[2px] bg-slate-800"></div>
             <div class="text-center">
-                <div class="text-[10px] md:text-xs text-slate-400 font-bold mb-1">STAGE (שלב)</div>
-                <div class="text-lg md:text-2xl font-black text-green-400 retro-font-numbers" id="stage-display">01/20</div>
+                <div class="text-[10px] md:text-xs text-slate-400 retro-title-sm mb-2">STAGE</div>
+                <div class="text-lg md:text-2xl text-green-400 retro-font-numbers" id="stage-display">01/20</div>
             </div>
-            <div class="h-8 w-[2px] bg-slate-800"></div>
             <div class="text-center">
-                <div class="text-[10px] md:text-xs text-slate-400 font-bold mb-1">MOVES (מהלכים)</div>
-                <div class="text-lg md:text-2xl font-black text-cyan-400 retro-font-numbers" id="moves-display">00/--</div>
+                <div class="text-[10px] md:text-xs text-slate-400 retro-title-sm mb-2">MOVES</div>
+                <div class="text-lg md:text-2xl text-cyan-400 retro-font-numbers" id="moves-display">00/--</div>
             </div>
         </div>
     </header>
 
     <!-- Main Arcade Cabinet Layout -->
-    <main class="w-full max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <main class="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        <!-- Game Screen (CRT Monitor representation) -->
+        <!-- Game Screen (CRT Monitor) -->
         <section class="lg:col-span-7 flex flex-col items-center">
-            <div class="w-full arcade-cabinet p-6 rounded-3xl flex flex-col items-center relative overflow-hidden">
-                
-                <!-- Scanline simulation effect on screen -->
-                <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] z-20"></div>
+            <div class="w-full arcade-cabinet p-6 flex flex-col items-center relative overflow-hidden">
+                <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(rgba(0,0,0,0)_50%,rgba(0,0,0,0.6)_100%)] z-20"></div>
 
-                <div class="mb-4 text-center z-10">
-                    <h3 class="text-lg md:text-xl font-extrabold text-pink-400 tracking-wide" id="level-title-display">שלב 1: הניצוץ הראשון</h3>
+                <div class="mb-4 text-center z-10 bg-black px-4 py-2 border-2 border-slate-700">
+                    <h3 class="text-lg md:text-xl text-pink-400 retro-title-sm" id="level-title-display">שלב 1: הניצוץ הראשון</h3>
                 </div>
 
                 <!-- Board Container -->
-                <div class="bg-black/80 p-6 rounded-2xl border-4 border-slate-900 shadow-2xl mb-6 z-10 flex items-center justify-center min-h-[300px] w-full max-w-[360px]">
-                    <div id="grid-container" class="grid gap-3 justify-center mx-auto transition-all">
+                <div class="bg-[#0a0a0a] p-4 border-4 border-slate-800 mb-6 z-10 flex items-center justify-center min-h-[320px] w-full">
+                    <div id="grid-container" class="grid gap-2 md:gap-3 justify-center mx-auto">
                         <!-- Instantiated via JS -->
                     </div>
                 </div>
 
-                <!-- Action Button -->
-                <div class="w-full flex justify-center gap-4 z-10">
-                    <button onclick="restartStage()" class="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold text-sm rounded-xl arcade-btn border-red-400 active:scale-95 transition">
+                <!-- Action Buttons -->
+                <div class="w-full flex justify-center gap-4 z-10 flex-wrap">
+                    <button onclick="restartStage()" class="px-6 py-3 text-white text-xs md:text-sm retro-btn btn-red">
                         אתחל שלב ↺
                     </button>
-                    <button onclick="showInstructions()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl arcade-btn border-slate-600">
+                    <button onclick="showInstructions()" class="px-6 py-3 text-white text-xs md:text-sm retro-btn btn-gray">
                         הוראות
                     </button>
-                    <button onclick="toggleFullScreen()" class="px-4 py-2.5 bg-cyan-800 hover:bg-cyan-700 text-slate-100 font-bold text-xs rounded-xl arcade-btn border-cyan-600">
+                    <button onclick="toggleFullScreen()" class="px-6 py-3 text-white text-xs md:text-sm retro-btn btn-cyan">
                         מסך מלא 🖥️
                     </button>
                 </div>
@@ -228,61 +225,59 @@
         <!-- Help & Tips Console Panel -->
         <section class="lg:col-span-5 flex flex-col gap-4">
             
-            <!-- Tip Deck Console -->
-            <div class="bg-slate-900/90 border-4 border-slate-800 p-5 rounded-3xl shadow-xl">
+            <div class="bg-black border-4 border-slate-700 p-5 shadow-xl">
                 
-                <!-- Crucial scoring display -->
-                <div class="bg-red-950/40 border border-red-500/30 p-3 rounded-xl mb-4 text-center">
-                    <p class="text-xs font-bold text-red-400">
-                        ⚠️ שים לב: שימוש בטיפ מפחית מהניקוד שלך!
+                <div class="bg-[#2a0808] border-4 border-red-600 p-3 mb-6 text-center">
+                    <p class="text-xs md:text-sm retro-title-sm text-red-400 animate-blink">
+                        ! אזהרה: שימוש בטיפ עולה בניקוד !
                     </p>
                 </div>
 
-                <div class="space-y-4">
+                <div class="space-y-5">
                     
                     <!-- Tip 1: חשיבה לעומק -->
-                    <div class="bg-black/50 p-4 rounded-xl border border-slate-800 flex items-center justify-between gap-3">
+                    <div class="bg-slate-900 p-4 border-4 border-blue-600 flex items-center justify-between gap-3">
                         <div class="text-right">
-                            <div class="text-xs text-rose-400 font-black tracking-widest uppercase mb-1">עלות: 150- נק׳</div>
-                            <h4 class="text-md font-bold text-slate-100">חשיבה לעומק</h4>
+                            <div class="text-[10px] text-blue-400 retro-font-numbers mb-2">-150 PTS</div>
+                            <h4 class="text-sm md:text-base retro-title-sm text-slate-100">חשיבה לעומק</h4>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="text-xs bg-slate-900 px-2 py-1 rounded text-slate-400 retro-font-numbers border border-slate-800">
+                            <div class="text-sm bg-black px-3 py-2 text-slate-300 retro-font-numbers border-2 border-slate-600">
                                 x<span id="token-count-self">0</span>
                             </div>
-                            <button id="btn-tip-self" onclick="triggerSelfHelp()" class="px-4 py-2 text-xs font-bold rounded-lg arcade-btn arcade-btn-blue text-white disabled:opacity-30 disabled:pointer-events-none">
+                            <button id="btn-tip-self" onclick="triggerSelfHelp()" class="px-4 py-3 text-xs retro-btn btn-blue text-white">
                                 הפעל
                             </button>
                         </div>
                     </div>
 
                     <!-- Tip 2: עזרה מחבר -->
-                    <div class="bg-black/50 p-4 rounded-xl border border-slate-800 flex items-center justify-between gap-3">
+                    <div class="bg-slate-900 p-4 border-4 border-yellow-500 flex items-center justify-between gap-3">
                         <div class="text-right">
-                            <div class="text-xs text-rose-400 font-black tracking-widest uppercase mb-1">עלות: 300- נק׳</div>
-                            <h4 class="text-md font-bold text-slate-100">עזרה מחבר</h4>
+                            <div class="text-[10px] text-yellow-500 retro-font-numbers mb-2">-300 PTS</div>
+                            <h4 class="text-sm md:text-base retro-title-sm text-slate-100">עזרה מחבר</h4>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="text-xs bg-slate-900 px-2 py-1 rounded text-slate-400 retro-font-numbers border border-slate-800">
+                            <div class="text-sm bg-black px-3 py-2 text-slate-300 retro-font-numbers border-2 border-slate-600">
                                 x<span id="token-count-peer">0</span>
                             </div>
-                            <button id="btn-tip-peer" onclick="triggerPeerHelp()" class="px-4 py-2 text-xs font-bold rounded-lg arcade-btn arcade-btn-yellow text-slate-950 disabled:opacity-30 disabled:pointer-events-none">
+                            <button id="btn-tip-peer" onclick="triggerPeerHelp()" class="px-4 py-3 text-xs retro-btn btn-yellow text-black">
                                 הפעל
                             </button>
                         </div>
                     </div>
 
                     <!-- Tip 3: פנייה למורה -->
-                    <div class="bg-black/50 p-4 rounded-xl border border-slate-800 flex items-center justify-between gap-3">
+                    <div class="bg-slate-900 p-4 border-4 border-pink-600 flex items-center justify-between gap-3">
                         <div class="text-right">
-                            <div class="text-xs text-rose-400 font-black tracking-widest uppercase mb-1">עלות: 500- נק׳</div>
-                            <h4 class="text-md font-bold text-slate-100">פנייה למורה</h4>
+                            <div class="text-[10px] text-pink-400 retro-font-numbers mb-2">-500 PTS</div>
+                            <h4 class="text-sm md:text-base retro-title-sm text-slate-100">פנייה למורה</h4>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="text-xs bg-slate-900 px-2 py-1 rounded text-slate-400 retro-font-numbers border border-slate-800">
+                            <div class="text-sm bg-black px-3 py-2 text-slate-300 retro-font-numbers border-2 border-slate-600">
                                 x<span id="token-count-teacher">0</span>
                             </div>
-                            <button id="btn-tip-teacher" onclick="triggerTeacherHelp()" class="px-4 py-2 text-xs font-bold rounded-lg arcade-btn arcade-btn-pink text-white disabled:opacity-30 disabled:pointer-events-none">
+                            <button id="btn-tip-teacher" onclick="triggerTeacherHelp()" class="px-4 py-3 text-xs retro-btn btn-pink text-white">
                                 פנה
                             </button>
                         </div>
@@ -295,22 +290,38 @@
 
     <!-- Modals Overlay System -->
     
+    <!-- Move Limit Warning Modal -->
+    <div id="limit-warning-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
+        <div class="retro-window border-red-500 max-w-md w-full p-6 text-center">
+            <div class="text-red-500 text-6xl mb-4 animate-blink">⚠️</div>
+            <h3 class="text-xl md:text-2xl retro-title-sm text-red-500 mb-4">אזהרת מערכת!</h3>
+            <p class="text-sm text-slate-200 leading-loose mb-6 font-bold bg-red-950 p-4 border-2 border-red-800">
+                החל משלב זה, המערכת פועלת על אנרגיה מוגבלת.<br><br>
+                עומדים לרשותך <span id="warning-limit-num" class="text-yellow-400 retro-font-numbers text-lg mx-2"></span> מהלכים בלבד.<br><br>
+                לחיצות אקראיות יגרמו לקצר טוטאלי! נהל את צעדיך (והטיפים שלך) בחוכמה.
+            </p>
+            <button onclick="acknowledgeLimitWarning()" class="w-full py-4 text-white text-sm retro-btn btn-red">
+                הבנתי, שחרר נעילה
+            </button>
+        </div>
+    </div>
+
     <!-- Reward Choice / Success Selection Modal -->
     <div id="reward-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border-4 border-emerald-500 p-6 rounded-2xl max-w-md w-full text-center shadow-2xl relative">
-            <div class="text-5xl mb-3">🎁</div>
-            <h3 class="text-xl font-black mb-2 text-emerald-400">השלב פוצח בהצלחה!</h3>
-            <p class="text-xs text-slate-300 leading-relaxed mb-6">
-                בונוס 1,000+ נקודות הוענק לך! כעת, בחר טיפ אחד לקבלת תגמול (תוספת +1 למלאי):
+        <div class="retro-window border-green-500 max-w-md w-full p-6 text-center">
+            <h3 class="text-xl md:text-2xl retro-title-sm text-green-400 mb-4">שלב הושלם!</h3>
+            <p class="text-xs text-slate-200 leading-loose mb-6 bg-slate-900 p-4 border-2 border-slate-700 font-bold">
+                <span class="text-yellow-400 retro-font-numbers">+1000 PTS</span> הוענקו!<br><br>
+                בחר טיפ אחד להוספה למלאי שלך:
             </p>
-            <div class="flex flex-col gap-3 mb-6">
-                <button onclick="claimReward('self')" class="py-3 bg-blue-700 hover:bg-blue-600 text-white font-bold rounded-xl text-sm border-2 border-blue-400 arcade-btn">
+            <div class="flex flex-col gap-4 mb-2">
+                <button onclick="claimReward('self')" class="w-full py-4 text-white text-xs md:text-sm retro-btn btn-blue">
                     +1 חשיבה לעומק
                 </button>
-                <button onclick="claimReward('peer')" class="py-3 bg-yellow-600 hover:bg-yellow-500 text-slate-950 font-bold rounded-xl text-sm border-2 border-yellow-300 arcade-btn">
+                <button onclick="claimReward('peer')" class="w-full py-4 text-black text-xs md:text-sm retro-btn btn-yellow">
                     +1 עזרה מחבר
                 </button>
-                <button onclick="claimReward('teacher')" class="py-3 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl text-sm border-2 border-pink-400 arcade-btn">
+                <button onclick="claimReward('teacher')" class="w-full py-4 text-white text-xs md:text-sm retro-btn btn-pink">
                     +1 פנייה למורה
                 </button>
             </div>
@@ -319,11 +330,12 @@
 
     <!-- Fail Modal -->
     <div id="fail-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border-4 border-red-500 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl relative">
-            <div class="text-5xl mb-3">💥</div>
-            <h3 id="fail-modal-title" class="text-xl font-black mb-2 text-red-500">קצר חשמלי!</h3>
-            <p id="fail-modal-desc" class="text-xs text-slate-300 leading-relaxed mb-6">אזלו כל המהלכים המותרים לשלב זה.</p>
-            <button onclick="handleFailAcknowledge()" class="px-6 py-2 bg-red-600 border-red-400 border-2 rounded-xl text-white font-bold arcade-btn text-sm w-full">
+        <div class="retro-window border-red-600 max-w-sm w-full p-6 text-center">
+            <h3 id="fail-modal-title" class="text-xl retro-title-sm text-red-500 mb-4">קצר חשמלי!</h3>
+            <p id="fail-modal-desc" class="text-sm text-slate-200 leading-loose mb-6 font-bold bg-[#2a0808] p-4 border-2 border-red-900">
+                אזלו כל המהלכים המותרים.
+            </p>
+            <button onclick="handleFailAcknowledge()" class="w-full py-4 text-white text-sm retro-btn btn-red">
                 נסה שוב ↺
             </button>
         </div>
@@ -331,66 +343,70 @@
 
     <!-- Final Game Win Modal -->
     <div id="game-win-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border-4 border-yellow-500 p-6 rounded-2xl max-w-md w-full text-center shadow-2xl">
-            <div class="text-6xl mb-3">👑</div>
-            <h3 class="text-2xl font-black mb-2 text-yellow-400">אלוף החשמל!</h3>
-            <p class="text-sm text-slate-300 leading-relaxed mb-6">
+        <div class="retro-window border-yellow-400 max-w-md w-full p-6 text-center">
+            <h3 class="text-2xl md:text-3xl retro-title-sm text-yellow-400 mb-4 animate-blink">אלוף החשמל!</h3>
+            <p class="text-sm text-slate-200 leading-loose mb-8 font-bold bg-yellow-900/30 p-4 border-2 border-yellow-600">
                 כל הכבוד! הצלחת לפרוץ ולייצב את כל 20 מערכות האנרגיה בלוח!
             </p>
-            <button onclick="resetGameEntirely()" class="w-full py-3 bg-yellow-600 hover:bg-yellow-500 text-slate-950 font-bold rounded-xl text-sm border-2 border-yellow-300 arcade-btn">
+            <button onclick="resetGameEntirely()" class="w-full py-4 text-black text-sm retro-btn btn-yellow">
                 שחק שוב מהתחלה ↺
             </button>
         </div>
     </div>
 
     <!-- Text Tip View Modal -->
-    <div id="text-tip-modal" class="fixed inset-0 bg-black/85 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border-4 border-cyan-500 p-6 rounded-2xl max-w-sm w-full shadow-2xl">
-            <h3 class="text-lg font-black text-cyan-400 mb-3 flex items-center gap-2">🧠 חשיבה לעומק</h3>
-            <p id="text-tip-content" class="text-sm text-slate-200 leading-relaxed bg-black/50 p-4 rounded-xl border border-slate-800 mb-6">
+    <div id="text-tip-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
+        <div class="retro-window border-blue-500 max-w-sm w-full p-6 text-center">
+            <h3 class="text-lg retro-title-sm text-blue-400 mb-4">חשיבה לעומק</h3>
+            <p id="text-tip-content" class="text-sm text-slate-100 leading-loose bg-blue-950/30 p-4 border-2 border-blue-900 mb-6 font-bold">
                 טוען...
             </p>
-            <button onclick="closeTextTipModal()" class="w-full py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold text-sm arcade-btn border-cyan-400">
-                אוקיי, אחזור לנסות!
+            <button onclick="closeTextTipModal()" class="w-full py-4 text-white text-sm retro-btn btn-blue">
+                חזור למשחק
             </button>
         </div>
     </div>
 
     <!-- Teacher Help Portal Modal -->
     <div id="teacher-help-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border-4 border-pink-500 p-6 rounded-2xl max-w-md w-full shadow-2xl">
-            <div class="flex justify-between items-start mb-4">
-                <h3 class="text-lg font-black text-pink-400 flex items-center gap-2">🦉 פנייה למורה</h3>
-                <button onclick="closeTeacherModal()" class="text-slate-400 hover:text-white font-black text-xl">✕</button>
+        <div class="retro-window border-pink-500 max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg retro-title-sm text-pink-400">פורטל מורה</h3>
+                <button onclick="closeTeacherModal()" class="text-slate-400 hover:text-white retro-title-sm text-xl">X</button>
             </div>
 
-            <div id="teacher-lock-screen" class="text-center py-6">
-                <p class="text-xs text-slate-400 mb-4 leading-relaxed">
-                    פורטל זה מיועד למורה בלבד על מנת להציג שאלה מנחה מתאימה לשלב.
+            <div id="teacher-lock-screen" class="text-center">
+                <p class="text-xs text-slate-300 mb-6 leading-loose font-bold bg-pink-950/30 p-4 border-2 border-pink-900">
+                    מיועד למורה בלבד. הקלד קוד גישה לחשיפת ההכוונה וההסבר:
                 </p>
-                <div class="flex justify-center gap-2 mb-4">
-                    <input type="password" id="teacher-pin-input" placeholder="קוד מורה (1234)" class="px-4 py-2 bg-black text-slate-200 rounded-xl border-2 border-slate-800 text-center font-bold focus:outline-none focus:border-pink-500 text-sm w-44">
-                    <button onclick="unlockTeacherView()" class="px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl text-sm arcade-btn border-pink-400">פתח</button>
+                <div class="flex flex-col gap-4 mb-4">
+                    <input type="password" id="teacher-pin-input" placeholder="CODE (1234)" class="px-4 py-3 bg-black text-pink-400 border-4 border-slate-700 text-center retro-font-numbers focus:outline-none focus:border-pink-500 w-full">
+                    <button onclick="unlockTeacherView()" class="w-full py-3 text-white text-sm retro-btn btn-pink">שחרר נעילה</button>
                 </div>
-                <p id="teacher-pin-err" class="text-xs text-red-500 hidden font-bold">קוד שגוי. נסה שוב!</p>
+                <p id="teacher-pin-err" class="text-xs text-red-500 hidden retro-title-sm font-bold">קוד שגוי!</p>
             </div>
 
             <div id="teacher-unlocked-screen" class="hidden">
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-4">
-                    <span class="text-xs text-slate-500 uppercase tracking-wider block mb-1">שאלה מנחה להצגה לתלמיד:</span>
-                    <p id="teacher-question-text" class="text-sm font-bold text-slate-200 leading-relaxed">
-                        טוען...
+                <div class="bg-black p-4 border-2 border-slate-700 mb-4">
+                    <span class="text-[10px] text-pink-500 retro-title-sm block mb-2">מיקום התא המומלץ ללחיצה:</span>
+                    <p id="teacher-target-coords" class="text-md font-bold text-yellow-400 leading-loose retro-font-numbers text-center">
+                        שורה X, עמודה Y
                     </p>
+                    <p class="text-xs text-slate-400 text-center mt-1">(התא מהבהב כעת בצבע צהוב על לוח המשחק!)</p>
                 </div>
-                <div class="bg-black/40 p-3 rounded-lg border border-slate-900 mb-6 text-xs text-slate-500">
-                    <span class="font-bold">אסטרטגיה מומלצת לשלב:</span>
-                    <p id="teacher-tip-text" class="mt-1">טוען...</p>
+                <div class="bg-black p-4 border-2 border-slate-700 mb-4">
+                    <span class="text-[10px] text-pink-500 retro-title-sm block mb-2">שאלה מנחה להצגה לתלמיד:</span>
+                    <p id="teacher-question-text" class="text-sm font-bold text-slate-100 leading-loose">טוען...</p>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="confirmTeacherHelpConsumption()" class="flex-grow py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm arcade-btn border-emerald-400">
-                        אישור וניצול אסימון עזרה
+                <div class="bg-slate-900 p-4 border-2 border-slate-700 mb-6">
+                    <span class="text-[10px] text-yellow-500 retro-title-sm block mb-2">הסבר לוגי לתלמיד (רמה גבוהה):</span>
+                    <p id="teacher-tip-text" class="text-xs text-slate-300 font-bold leading-loose">טוען...</p>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <button onclick="confirmTeacherHelpConsumption()" class="w-full py-4 text-white text-sm retro-btn btn-green">
+                        אישור וניצול אסימון
                     </button>
-                    <button onclick="closeTeacherModal()" class="px-4 py-2.5 bg-slate-800 text-slate-300 rounded-xl font-bold text-sm arcade-btn border-slate-600">
+                    <button onclick="closeTeacherModal()" class="w-full py-3 text-white text-sm retro-btn btn-gray">
                         ביטול
                     </button>
                 </div>
@@ -399,41 +415,46 @@
     </div>
 
     <!-- Instructions / Retro Intro Screen -->
-    <div id="instructions-modal" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-950 border-4 border-cyan-500 p-6 rounded-3xl max-w-lg w-full shadow-2xl relative overflow-hidden">
-            <!-- Retro decor lines -->
-            <div class="absolute inset-0 bg-radial-gradient pointer-events-none opacity-20"></div>
-
-            <h3 class="text-2xl md:text-3xl font-black text-cyan-400 retro-title text-center mb-1">קצר חשמלי ⚡</h3>
-            <p class="text-center font-bold text-pink-500 mb-6 tracking-widest text-xs uppercase">הכנה ל-720</p>
+    <div id="instructions-modal" class="fixed inset-0 bg-black z-50 flex items-center justify-center p-4">
+        <div class="retro-window border-cyan-500 max-w-lg w-full p-6 relative overflow-hidden flex flex-col items-center">
             
-            <div class="text-xs sm:text-sm text-slate-300 space-y-4 leading-relaxed mb-6 border-y-2 border-slate-800 py-4 max-h-[300px] overflow-y-auto pr-2">
-                <p>
-                    <span class="text-yellow-400 font-bold">משימה:</span> להפוך את כל פנסי המערכת שעל הלוח לצבע <span class="text-green-400 font-bold">ירוק</span>.
+            <!-- Pure CSS Retro Pixel Art Bulb (Yellow glowing arcade style) -->
+            <svg class="mb-4 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]" width="60" height="60" viewBox="0 0 10 11" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+                <rect x="3" y="1" width="4" height="1" fill="#facc15" />
+                <rect x="2" y="2" width="6" height="3" fill="#facc15" />
+                <rect x="1" y="3" width="8" height="3" fill="#facc15" />
+                <rect x="2" y="6" width="6" height="1" fill="#facc15" />
+                <rect x="3" y="7" width="4" height="1" fill="#64748b" />
+                <rect x="4" y="8" width="2" height="1" fill="#94a3b8" />
+                <rect x="4" y="9" width="2" height="1" fill="#475569" />
+                <rect x="4" y="10" width="2" height="1" fill="#000" />
+            </svg>
+
+            <h3 class="text-3xl md:text-4xl text-cyan-400 retro-title text-center mb-2">קצר חשמלי</h3>
+            <p class="text-center retro-title-sm text-pink-500 mb-6 text-sm md:text-lg">הכנה ל-720</p>
+            
+            <div class="w-full text-xs sm:text-sm text-slate-200 leading-loose mb-8 border-y-4 border-slate-700 py-4 max-h-[300px] overflow-y-auto pr-2 bg-slate-900 px-4 font-bold">
+                <p class="mb-3">
+                    <span class="text-yellow-400 retro-title-sm text-[10px] block mb-1">>> משימה:</span>
+                    הפוך את כל פנסי המערכת ל<span class="text-green-400">ירוקים</span>.
                 </p>
-                <p>
-                    <span class="text-yellow-400 font-bold">אינטראקציה:</span> לחיצה על פנס משנה אותו ואת השכנים שלו (למעלה, למטה, ימין ושמאל).
+                <p class="mb-3">
+                    <span class="text-yellow-400 retro-title-sm text-[10px] block mb-1">>> אינטראקציה:</span>
+                    לחיצה על פנס משנה אותו ואת השכנים שלו (מעלה, מטה, ימין, שמאל).
                 </p>
-                <p>
-                    <span class="text-yellow-400 font-bold">קשיים:</span> בשלבים מתקדמים תהיה מכסת מהלכים קשוחה. אם תתעקש ללחוץ סתם מבלי לתכנן, המערכת תינעל!
+                <p class="mb-3">
+                    <span class="text-red-400 retro-title-sm text-[10px] block mb-1">>> ניהול טיפים ועזרה:</span>
+                    פתיחת טיפ מורידה מהניקוד הכללי שלך מיידית! 
+                    מתחילים עם 0 טיפים. בסיום כל שלב תקבל לבחור טיפ +1 במתנה.
                 </p>
-                <p>
-                    <span class="text-rose-400 font-bold">הטיפים כמנוע עזרה:</span> פתיחת טיפ עוזרת לך להתקדם, אך <span class="text-red-400 font-bold">מפחיתה מהניקוד שלך באופן מיידי</span>!
-                </p>
-                <p>
-                    <span class="text-emerald-400 font-bold">צבירת טיפים:</span> אתה מתחיל את המשחק עם <span class="text-red-400 font-bold">0 טיפים</span>. עם מעבר כל שלב בהצלחה, תקבל בונוס ניקוד ותבחר טיפ אחד להוספה למלאי שלך!
-                </p>
-                <div class="p-3 bg-cyan-950/40 border border-cyan-500/20 rounded-xl text-cyan-300 text-xs text-center font-bold">
-                    💡 מומלץ להעביר את המשחק למצב מסך מלא לצפייה וריכוז מרביים!
-                </div>
             </div>
             
-            <div class="flex flex-col sm:flex-row gap-3">
-                <button onclick="toggleFullScreen();" class="px-4 py-2.5 bg-purple-800 hover:bg-purple-700 text-slate-100 font-bold text-xs rounded-xl arcade-btn border-purple-600 sm:w-1/3">
-                    מסך מלא 🖥️
+            <div class="flex flex-col md:flex-row gap-4 w-full">
+                <button onclick="toggleFullScreen();" class="w-full md:w-1/3 py-3 text-white text-xs retro-btn btn-purple">
+                    מסך מלא
                 </button>
-                <button onclick="closeInstructions()" class="flex-grow py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold text-sm arcade-btn border-cyan-400">
-                    כנס למשחק 🕹️
+                <button onclick="closeInstructions()" class="w-full md:w-2/3 py-4 text-white text-sm retro-btn btn-cyan animate-blink">
+                    INSERT COIN (START)
                 </button>
             </div>
         </div>
@@ -445,7 +466,6 @@
 
         function playSound(type) {
             try {
-                // Resume audioContext if suspended (browser security policies)
                 if (audioCtx.state === 'suspended') {
                     audioCtx.resume();
                 }
@@ -455,157 +475,73 @@
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
 
+                const now = audioCtx.currentTime;
+
                 if (type === 'click') {
-                    // Quick high pitch chirp
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.1);
-                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.15);
-                } else if (type === 'win') {
-                    // Upward 8-bit scale
-                    const now = audioCtx.currentTime;
                     osc.type = 'square';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
                     gain.gain.setValueAtTime(0.1, now);
-                    
-                    osc.frequency.setValueAtTime(261.63, now); // C4
-                    osc.frequency.setValueAtTime(329.63, now + 0.1); // E4
-                    osc.frequency.setValueAtTime(392.00, now + 0.2); // G4
-                    osc.frequency.setValueAtTime(523.25, now + 0.3); // C5
-                    
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                    osc.start();
-                    osc.stop(now + 0.5);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } else if (type === 'win') {
+                    osc.type = 'square';
+                    gain.gain.setValueAtTime(0.15, now);
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.setValueAtTime(400, now + 0.1);
+                    osc.frequency.setValueAtTime(500, now + 0.2);
+                    osc.frequency.setValueAtTime(600, now + 0.3);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+                    osc.start(now);
+                    osc.stop(now + 0.6);
                 } else if (type === 'fail') {
-                    // Downward buzzer
                     osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-                    osc.frequency.linearRampToValueAtTime(60, audioCtx.currentTime + 0.4);
-                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.4);
+                    osc.frequency.setValueAtTime(120, now);
+                    osc.frequency.linearRampToValueAtTime(40, now + 0.4);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
                 }
             } catch (e) {
-                console.log("Audio not supported or interaction required: ", e);
+                console.log("Audio contextual trigger error: ", e);
             }
         }
 
-        // Full Screen Toggle Action
+        // Full Screen Toggle Control
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Error attempting to enable full-screen mode: ${err.message}`);
+                    console.log(`Failed full-screen transition: ${err.message}`);
                 });
             } else {
                 document.exitFullscreen();
             }
         }
 
-        // 20 levels carefully balanced, pre-simulated and verifiable
+        // 20 levels carefully designed
         const levels = [
-            { id: 1, size: 3, name: "הניצוץ הראשון", initialFlips: [[1, 1]], limit: null,
-              selfTip: "נורה אדומה בודדת במרכז. הקלק עליה ישירות ותראה מה קורה!",
-              teacherQuestion: "היכן נמצא מרכז הכובד של המערכת המשתקפת כאן? האם לחיצה אחת תספיק?",
-              teacherStrategy: "יש ללחוץ על התא המרכזי (1,1) כדי לפתור את השלב במהלך אחד." },
-            
-            { id: 2, size: 3, name: "תנועת מלקחיים", initialFlips: [[0, 0], [2, 2]], limit: null,
-              selfTip: "נורות אדומות ממוקמות בפינות הנגדיות. נסה להשפיע עליהן על ידי בחירת תאים סמוכים.",
-              teacherQuestion: "אילו תאים משפיעים ישירות על הפינות הלא דולקות מבלי להפריע למרכז?",
-              teacherStrategy: "יש ללחוץ על הפינות הנגדיות הלא פעילות כדי להשלים את הלוח." },
-            
-            { id: 3, size: 3, name: "הקו הישר", initialFlips: [[0, 1], [1, 1], [2, 1]], limit: null,
-              selfTip: "שורה שלמה כבויה במרכז. נסה לראות כיצד לחיצה בקצוות השורה משפיעה על השאר.",
-              teacherQuestion: "אם נלחץ ישירות על מרכז השורה האדומה, כיצד הזרם יתפשט?",
-              teacherStrategy: "שילוב של לחיצה על התאים הקיצוניים של העמודה המרכזית יוביל לפתרון." },
-            
-            { id: 4, size: 4, name: "ריבוע כפול", initialFlips: [[1, 1], [2, 2]], limit: null,
-              selfTip: "כאן יש לנו מטריצה גדולה יותר של 4x4. הבט בסימטריה ובדוק אילו אלכסונים משפיעים זה על זה.",
-              teacherQuestion: "כיצד הגדלת הלוח משפיעה על כוח הלחיצות של הפינות לעומת המרכז?",
-              teacherStrategy: "לפתור באמצעות ביטול פנימי הדרגתי מהשוליים כלפי פנים." },
-            
-            { id: 5, size: 4, name: "ארבע פינות", initialFlips: [[0, 0], [0, 3], [3, 0], [3, 3]], limit: null,
-              selfTip: "ארבעת פינות הלוח כבויות. זכור כי לכל פינה יש רק שתי שכנות ישירות.",
-              teacherQuestion: "אם לכל פינה יש פחות שכנות, האם קל יותר להתחיל לפתור מהקצה?",
-              teacherStrategy: "לחיצה על התאים הסמוכים לפינות תנטרל אותן בקלות." },
-            
-            { id: 6, size: 4, name: "מבצר הניאון", initialFlips: [[1, 1], [1, 2], [2, 1], [2, 2]], limit: 10,
-              selfTip: "שים לב - החל משלב זה יש לך הגבלת מהלכים קשוחה! תכנן את הצעדים שלך מראש.",
-              teacherQuestion: "הלב המרכזי של הריבוע כבוי. אילו פעולות מבחוץ יכולות לעורר את המרכז?",
-              teacherStrategy: "שימוש בלחיצות סימטריות מהקצוות החיצוניים כדי לפתור ללא חריגה ממכסה." },
-            
-            { id: 7, size: 4, name: "מתח משתנה", initialFlips: [[0, 1], [1, 2], [2, 3], [3, 0]], limit: 12,
-              selfTip: "הקצרים החשמליים זזים הצידה באלכסון. חפש את נקודת האיזון הנגדית.",
-              teacherQuestion: "האם שמת לב למחזוריות של הכתמים האדומים? מה קורה כשאתה מנסה לאזן צד אחד?",
-              teacherStrategy: "לחיצה מדויקת לאורך קו האיזון הנגדי." },
-            
-            { id: 8, size: 5, name: "ברוכים הבאים ל-5X5", initialFlips: [[2, 2]], limit: 14,
-              selfTip: "מטריצה גדולה של 5x5. המרכז כבוי. הזרם זורם רחוק יותר, פעל במעגלים.",
-              teacherQuestion: "המרחב הולך וגדל. כיצד תבטיח שלא תלך לאיבוד בלולאות לחיצה אינסופיות?",
-              teacherStrategy: "עבודה שיטתית ולימוד תבנית המרחק מהמרכז." },
-            
-            { id: 9, size: 5, name: "הצלב הגדול", initialFlips: [[1, 1], [1, 3], [3, 1], [3, 3]], limit: 15,
-              selfTip: "ארבע נורות אדומות מבודדות. נסה למשוך אותן לכיוון המרכז או הקצוות כדי לאחדן.",
-              teacherQuestion: "אילו תאים ימשכו את האנרגיה האדומה למבנה אחד פשוט לפתרון?",
-              teacherStrategy: "איחוד האורות על ידי לחיצה פנימית ביניהם." },
-            
-            { id: 10, size: 5, name: "לוח שחמט", initialFlips: [[0, 2], [2, 0], [2, 4], [4, 2], [2, 2]], limit: 16,
-              selfTip: "שלב מורכב במיוחד. תבנית סימטרית אך רחבה. נסה לפתור מלמעלה למטה.",
-              teacherQuestion: "נסה את שיטת 'רדיפת האורות': הורד את כל הנורות האדומות לשורה התחתונה ואז פתור אותן משם.",
-              teacherStrategy: "השתמש בטכניקת Chase the Lights המאפשרת פתרון שיטתי של לוח לייטס-אאוט." },
-            
-            { id: 11, size: 5, name: "הסערה השקטה", initialFlips: [[0, 0], [0, 4], [4, 0], [4, 4], [1, 2], [3, 2]], limit: 18,
-              selfTip: "הפינות הקיצוניות דורשות עבודה מדויקת. אל תמהר להרוס שורות שכבר ירוקות.",
-              teacherQuestion: "כיצד נוכל לשמור על אזור ירוק קיים בזמן שאנו מתקנים את קצוות הלוח?",
-              teacherStrategy: "לחיצה עקיפה על תאים משניים המבודדים מהשורה הפתורה." },
-            
-            { id: 12, size: 5, name: "מילניום סופי", initialFlips: [[0, 1], [1, 3], [2, 0], [3, 4], [4, 2], [1, 1], [3, 3]], limit: 20,
-              selfTip: "רמת המורכבות גבוהה מאוד. חפש מקבצי אורות קרובים ופתור אותם קודם.",
-              teacherQuestion: "שלב זה מאתגר מאוד. האם תרצה שנתמקד בשחזור השורה הראשונה תחילה?",
-              teacherStrategy: "פירוק הדרגתי מלמעלה למטה." },
-            
-            { id: 13, size: 6, name: "מטריצת ענק 6X6", initialFlips: [[1, 1], [2, 4], [4, 2], [3, 3]], limit: 22,
-              selfTip: "הגעת ללוח 6x6 ענקי! החוקים זהים אך המרחב עצום. פעל בקבוצות קטנות.",
-              teacherQuestion: "איך נוכל לחלק את המרחב העצום של 6x6 לתתי-אזורים קטנים יותר בראש?",
-              teacherStrategy: "חלוקת המטריצה לחלקים סימטריים קטנים." },
-            
-            { id: 14, size: 6, name: "עמודי התווך", initialFlips: [[0, 0], [5, 5], [0, 5], [5, 0], [2, 2], [3, 3]], limit: 24,
-              selfTip: "הפינות והמרכז כבויים. נסה ליצור גשרים של אור ביניהם.",
-              teacherQuestion: "אילו תאים מקשרים לוגית בין הפינות המרוחקות למרכז הלוח המשותף?",
-              teacherStrategy: "איזון מהפינות כלפי המרכז על ידי לחיצות ביניים." },
-            
-            { id: 15, size: 6, name: "מעבה המערכת", initialFlips: [[1, 2], [2, 3], [3, 4], [4, 1], [0, 0], [5, 5], [2, 2]], limit: 25,
-              selfTip: "כל המערכות קורסות. נצל את כל הכלים והידע שצברת.",
-              teacherQuestion: "הגעת לקצה המערכת. שלב את כל האסטרטגיות: רדיפת אורות, סימטריה וסבלנות.",
-              teacherStrategy: "זהו השלב הקשה ביותר. לחיצות מבוקרות וסיוע של המורה יובילו לניצחון." },
-
-            // NEW BALANCED LEVELS FROM 16 TO 20
-            { id: 16, size: 4, name: "זרימה פנימית", initialFlips: [[0, 0], [1, 1], [2, 2], [3, 3], [0, 3], [3, 0]], limit: 14,
-              selfTip: "האלכסונים הכפולים נעולים. התחל לשחרר מהמרכז כדי ליצור חופש תנועה.",
-              teacherQuestion: "כיצד תבנית ה-X הנוצרת על הלוח משפיעה על השורה העליונה?",
-              teacherStrategy: "יש לפתור מהמרכז החוצה לפינות." },
-
-            { id: 17, size: 5, name: "מבוך תדרים", initialFlips: [[0, 1], [1, 1], [2, 1], [3, 1], [4, 3], [1, 4]], limit: 16,
-              selfTip: "קווים אנכיים מבודדים. שים לב כי שימוש בטיפ חשיבה יעניק לך בדיוק את נקודת האיזון.",
-              teacherQuestion: "מדוע העמודה השנייה משפיעה כל כך חזק על פינות הימין?",
-              teacherStrategy: "שילוב שיטת רדיפת אורות להורדת כל המורכבות לתחתית המטריצה." },
-
-            { id: 18, size: 5, name: "לוח תהודה", initialFlips: [[1, 0], [0, 1], [4, 3], [3, 4], [2, 2]], limit: 18,
-              selfTip: "לוח כמעט ירוק, אך הקצוות משובשים. השתמש ברמז חבר ללחיצה סודית.",
-              teacherQuestion: "האם לחיצה בפינות תעזור ליישר את המצב או שמא עדיף לפעול ממרכז המטריצה?",
-              teacherStrategy: "יש לנטרל את השבירות הללו ישירות מתאי הקצה." },
-
-            { id: 19, size: 6, name: "שרשרת הולכה", initialFlips: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]], limit: 24,
-              selfTip: "קשר מורכב באלכסונים רצופים. תכנן צעדים מבוקרים.",
-              teacherQuestion: "איזו סדרת תאים מהווה את 'עמוד השדרה' של הלוח הנתון?",
-              teacherStrategy: "פתרון הדרגתי שורה אחר שורה." },
-
-            { id: 20, size: 6, name: "קצר אחרון", initialFlips: [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [0, 5], [5, 0], [2, 3], [3, 2]], limit: 26,
-              selfTip: "האתגר האולטימטיבי! התחל מהמרכז ומשוך את כל האדומים לקצוות העליונים.",
-              teacherQuestion: "הגעת לשלב האחרון! נסה לשלב את כל הכלים שלמדת לאורך המסלול.",
-              teacherStrategy: "שלב מורכב במיוחד. ליווי קפדני ורפלקציה בזמן אמת." }
+            { id: 1, size: 3, name: "הניצוץ הראשון", initialFlips: [[1, 1]], limit: null },
+            { id: 2, size: 3, name: "תנועת מלקחיים", initialFlips: [[0, 0], [2, 2]], limit: null },
+            { id: 3, size: 3, name: "הקו הישר", initialFlips: [[0, 1], [1, 1], [2, 1]], limit: null },
+            { id: 4, size: 4, name: "ריבוע כפול", initialFlips: [[1, 1], [2, 2]], limit: null },
+            { id: 5, size: 4, name: "ארבע פינות", initialFlips: [[0, 0], [0, 3], [3, 0], [3, 3]], limit: null },
+            { id: 6, size: 4, name: "מבצר הניאון", initialFlips: [[1, 1], [1, 2], [2, 1], [2, 2]], limit: 10 },
+            { id: 7, size: 4, name: "מתח משתנה", initialFlips: [[0, 1], [1, 2], [2, 3], [3, 0]], limit: 12 },
+            { id: 8, size: 5, name: "ברוכים הבאים ל-5X5", initialFlips: [[2, 2]], limit: 14 },
+            { id: 9, size: 5, name: "הצלב הגדול", initialFlips: [[1, 1], [1, 3], [3, 1], [3, 3]], limit: 15 },
+            { id: 10, size: 5, name: "לוח שחמט", initialFlips: [[0, 2], [2, 0], [2, 4], [4, 2], [2, 2]], limit: 16 },
+            { id: 11, size: 5, name: "הסערה השקטה", initialFlips: [[0, 0], [0, 4], [4, 0], [4, 4], [1, 2], [3, 2]], limit: 18 },
+            { id: 12, size: 5, name: "מילניום סופי", initialFlips: [[0, 1], [1, 3], [2, 0], [3, 4], [4, 2], [1, 1], [3, 3]], limit: 20 },
+            { id: 13, size: 6, name: "מטריצת ענק 6X6", initialFlips: [[1, 1], [2, 4], [4, 2], [3, 3]], limit: 22 },
+            { id: 14, size: 6, name: "עמודי התווך", initialFlips: [[0, 0], [5, 5], [0, 5], [5, 0], [2, 2], [3, 3]], limit: 24 },
+            { id: 15, size: 6, name: "מעבה המערכת", initialFlips: [[1, 2], [2, 3], [3, 4], [4, 1], [0, 0], [5, 5], [2, 2]], limit: 25 },
+            { id: 16, size: 4, name: "זרימה פנימית", initialFlips: [[0, 0], [1, 1], [2, 2], [3, 3], [0, 3], [3, 0]], limit: 14 },
+            { id: 17, size: 5, name: "מבוך תדרים", initialFlips: [[0, 1], [1, 1], [2, 1], [3, 1], [4, 3], [1, 4]], limit: 16 },
+            { id: 18, size: 5, name: "לוח תהודה", initialFlips: [[1, 0], [0, 1], [4, 3], [3, 4], [2, 2]], limit: 18 },
+            { id: 19, size: 6, name: "שרשרת הולכה", initialFlips: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]], limit: 24 },
+            { id: 20, size: 6, name: "קצר אחרון", initialFlips: [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [0, 5], [5, 0], [2, 3], [3, 2]], limit: 26 }
         ];
 
         // Core Game States
@@ -614,6 +550,7 @@
         let moves = 0;
         let board = [];
         let peerSuggestion = null;
+        let hasAcknowledgedCurrentWarning = false;
 
         // Help Resources Stock (Starts at 0!)
         let helpStock = {
@@ -623,6 +560,12 @@
         };
 
         // Initialize App on load
+        window.onload = function() {
+            updateUI();
+            initStage();
+        };
+
+        // Initialize Level parameters
         function initStage() {
             const level = levels[currentIdx];
             moves = 0;
@@ -644,6 +587,30 @@
             const gridContainer = document.getElementById('grid-container');
             gridContainer.classList.remove('board-win-active'); // Clean win animations
 
+            // Check if transferring to limited moves and we haven't warned yet
+            if (level.limit !== null && !hasAcknowledgedCurrentWarning) {
+                const lastLevel = currentIdx > 0 ? levels[currentIdx - 1] : null;
+                if (!lastLevel || lastLevel.limit === null) {
+                    showLimitWarningModal(level.limit);
+                    return; // Pause rendering until acknowledged
+                }
+            }
+
+            renderGrid(level.size);
+            updateUI();
+        }
+
+        // Show Retro Limit Warning Modal
+        function showLimitWarningModal(limitNum) {
+            document.getElementById('warning-limit-num').innerText = limitNum;
+            document.getElementById('limit-warning-modal').style.display = 'flex';
+            playSound('fail');
+        }
+
+        function acknowledgeLimitWarning() {
+            hasAcknowledgedCurrentWarning = true;
+            document.getElementById('limit-warning-modal').style.display = 'none';
+            const level = levels[currentIdx];
             renderGrid(level.size);
             updateUI();
         }
@@ -660,7 +627,7 @@
                     bulbBtn.id = `bulb-${r}-${c}`;
                     bulbBtn.className = `pixel-bulb aspect-square rounded-lg cursor-pointer ${board[r][c] ? 'pixel-bulb-on' : 'pixel-bulb-off'}`;
                     
-                    // Apply Peer suggestion animation if active
+                    // Apply Peer suggestion or Teacher recommendation animation if active
                     if (peerSuggestion && peerSuggestion.r === r && peerSuggestion.c === c) {
                         bulbBtn.classList.add('pixel-flash-active');
                     }
@@ -777,6 +744,9 @@
             document.getElementById('reward-modal').style.display = 'none';
             updateUI();
 
+            // Reset current warning status for the next level transition checks
+            hasAcknowledgedCurrentWarning = false;
+
             // Proceed to next level or show game victory
             if (currentIdx < levels.length - 1) {
                 currentIdx++;
@@ -790,22 +760,114 @@
             currentIdx = 0;
             score = 10000;
             helpStock = { self: 0, peer: 0, teacher: 0 };
+            hasAcknowledgedCurrentWarning = false;
             document.getElementById('game-win-modal').style.display = 'none';
             initStage();
         }
 
-        /* Tip System Actions */
+        /* MATHEMATICAL METADATA SOLVER FOR DYNAMIC HINTS
+           This calculates the exact optimal set of presses required to solve the CURRENT layout.
+           Using Gaussian elimination over GF(2)
+        */
+        function solveCurrentBoard() {
+            const level = levels[currentIdx];
+            const N = level.size * level.size;
+            
+            // Initialize system matrix M of size N x (N+1)
+            const M = [];
+            for (let i = 0; i < N; i++) {
+                M[i] = new Uint8Array(N + 1);
+                const r = Math.floor(i / level.size);
+                const c = i % level.size;
+                
+                // Toggle adjacency list
+                const directions = [[0,0], [-1,0], [1,0], [0,-1], [0,1]];
+                directions.forEach(([dr, dc]) => {
+                    const nr = r + dr;
+                    const nc = c + dc;
+                    if (nr >= 0 && nr < level.size && nc >= 0 && nc < level.size) {
+                        const j = nr * level.size + nc;
+                        M[i][j] = 1;
+                    }
+                });
 
-        // Tip 1: חשיבה לעומק
+                // Target condition: We want to toggle cells that are currently OFF (false)
+                M[i][N] = board[r][c] ? 0 : 1;
+            }
+
+            // Perform Gaussian elimination to RREF
+            let pivotRow = 0;
+            const pivotColMap = new Int32Array(N).fill(-1);
+
+            for (let col = 0; col < N; col++) {
+                let r = pivotRow;
+                while (r < N && M[r][col] === 0) r++;
+                
+                if (r < N) {
+                    // Swap rows
+                    const temp = M[pivotRow];
+                    M[pivotRow] = M[r];
+                    M[r] = temp;
+
+                    pivotColMap[col] = pivotRow;
+
+                    // Eliminate in other rows
+                    for (let r2 = 0; r2 < N; r2++) {
+                        if (r2 !== pivotRow && M[r2][col] === 1) {
+                            for (let c2 = col; c2 <= N; c2++) {
+                                M[r2][c2] ^= M[pivotRow][c2];
+                            }
+                        }
+                    }
+                    pivotRow++;
+                }
+            }
+
+            // Extract the target list of optimal clicks
+            const solution = new Uint8Array(N);
+            for (let col = 0; col < N; col++) {
+                const pRow = pivotColMap[col];
+                if (pRow !== -1) {
+                    solution[col] = M[pRow][N];
+                } else {
+                    solution[col] = 0;
+                }
+            }
+
+            // Create array of coordinates that need to be clicked
+            const activeMoves = [];
+            for (let i = 0; i < N; i++) {
+                if (solution[i] === 1) {
+                    activeMoves.push({
+                        r: Math.floor(i / level.size),
+                        c: i % level.size
+                    });
+                }
+            }
+            return activeMoves;
+        }
+
+        /* Tip System Actions - Realtime & State-Aware */
+
+        // Tip 1: חשיבה לעומק (Dynamic State Observation)
         function triggerSelfHelp() {
             if (helpStock.self <= 0) return;
 
-            // Deduct Points
+            // Get optimal clicks for current state
+            const optimalMoves = solveCurrentBoard();
+            
+            let tipText = "";
+            if (optimalMoves.length === 0) {
+                tipText = "מערכות הבקרה מעידות שהלוח כבר פתור לחלוטין! אם הלוח לא השתנה, בצע מהלך קטן כדי לאתחל את האיזון.";
+            } else {
+                tipText = `המערכת מזהה כי במצב הנוכחי אתה נמצא במרחק של ${optimalMoves.length} לחיצות מדויקות בלבד מפתרון מלא!\n\nהמלצה: אל תילחץ במקומות אקראיים. נסה לאתר את הנורה המקשרת בין הריכוזים האדומים בשורות העליונות ביותר ולהוריד את הזרם כלפי מטה.`;
+            }
+
+            // Deduct Points & Stock
             score = Math.max(0, score - 150);
             helpStock.self--;
 
-            const level = levels[currentIdx];
-            document.getElementById('text-tip-content').innerText = level.selfTip;
+            document.getElementById('text-tip-content').innerText = tipText;
             document.getElementById('text-tip-modal').style.display = 'flex';
 
             updateUI();
@@ -815,34 +877,66 @@
             document.getElementById('text-tip-modal').style.display = 'none';
         }
 
-        // Tip 2: עזרה מחבר
+        // Tip 2: עזרה מחבר (Dynamic move recommendation)
         function triggerPeerHelp() {
             if (helpStock.peer <= 0) return;
+
+            const optimalMoves = solveCurrentBoard();
+            if (optimalMoves.length === 0) {
+                // If already solved or no moves found (rare), fallback to random unscrambled coordinate
+                const level = levels[currentIdx];
+                const randIndex = Math.floor(Math.random() * level.initialFlips.length);
+                const targetCell = level.initialFlips[randIndex];
+                peerSuggestion = { r: targetCell[0], c: targetCell[1] };
+            } else {
+                // Highly dynamic move recommendation! Highlight one of the optimal steps for the current state.
+                const randMove = optimalMoves[Math.floor(Math.random() * optimalMoves.length)];
+                peerSuggestion = { r: randMove.r, c: randMove.c };
+            }
 
             // Deduct Points
             score = Math.max(0, score - 300);
             helpStock.peer--;
 
-            const level = levels[currentIdx];
-            // Take a random correct move of initial scrambling to guide the user back to correctness
-            const randIndex = Math.floor(Math.random() * level.initialFlips.length);
-            const targetCell = level.initialFlips[randIndex];
-
-            peerSuggestion = { r: targetCell[0], c: targetCell[1] };
-            renderGrid(level.size);
-
+            renderGrid(levels[currentIdx].size);
             updateUI();
         }
 
-        // Tip 3: פנייה למורה
+        // Tip 3: פנייה למורה (High Level: עזרה + הסבר)
         function triggerTeacherHelp() {
             if (helpStock.teacher <= 0) return;
 
-            const level = levels[currentIdx];
+            const optimalMoves = solveCurrentBoard();
+            let selectedMove = null;
+            
+            if (optimalMoves.length > 0) {
+                selectedMove = optimalMoves[Math.floor(Math.random() * optimalMoves.length)];
+            } else {
+                // Fallback
+                const level = levels[currentIdx];
+                const randIndex = Math.floor(Math.random() * level.initialFlips.length);
+                const targetCell = level.initialFlips[randIndex];
+                selectedMove = { r: targetCell[0], c: targetCell[1] };
+            }
 
-            // Setup elements in teacher portal
-            document.getElementById('teacher-question-text').innerText = level.teacherQuestion;
-            document.getElementById('teacher-tip-text').innerText = level.teacherStrategy;
+            // Apply the recommendation highlight (just like Peer Help)
+            peerSuggestion = { r: selectedMove.r, c: selectedMove.c };
+
+            // Set coordinates in Hebrew
+            const HebrewRows = ["ראשונה", "שנייה", "שלישית", "רביעית", "חמישית", "שישית"];
+            const rowText = HebrewRows[selectedMove.r] || `${selectedMove.r + 1}`;
+            const colText = HebrewRows[selectedMove.c] || `${selectedMove.c + 1}`;
+
+            document.getElementById('teacher-target-coords').innerText = `שורה ${rowText} (מלמעלה), עמודה ${colText} (מימין)`;
+
+            // Define dynamic rich guidance question & explanation based on board status
+            const totalRedCount = board.flat().filter(cell => !cell).length;
+            
+            document.getElementById('teacher-question-text').innerText = 
+                `שים לב כי הלוח מכיל כרגע ${totalRedCount} נורות אדומות מפוזרות. אם נלחץ על התא המהבהב בשורה ${selectedMove.r + 1} ובעמודה ${selectedMove.c + 1}, כיצד זה ישנה את מאזן הכוחות של הנורות השכנות? האם זה יקרב אותנו לקראת ניקוי השורות העליונות?`;
+
+            document.getElementById('teacher-tip-text').innerText = 
+                `מניתוח המערכת עולה כי התא המומלץ מהווה צומת השפעה קריטי. לחיצה עליו תפעיל זרם מנוגד המבטל את השבירה במטריצה ותאפס ${1 + getNeighborOffCount(selectedMove.r, selectedMove.c)} נורות המקיפות אותו באזור זה. הלחיצה הזו תתחיל שרשרת איזון שתסייע להביא את הזרמים להרמוניה ירוקה.`;
 
             // Lock screen setup
             document.getElementById('teacher-lock-screen').style.display = 'block';
@@ -853,11 +947,31 @@
             document.getElementById('teacher-help-modal').style.display = 'flex';
         }
 
+        // Helper to count how many neighboring cells are currently OFF (red)
+        function getNeighborOffCount(r, c) {
+            let count = 0;
+            const size = levels[currentIdx].size;
+            const directions = [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]];
+            directions.forEach(([dr, dc]) => {
+                const nr = r + dr;
+                const nc = c + dc;
+                if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
+                    if (!board[nr][nc]) {
+                        count++;
+                    }
+                }
+            });
+            return count;
+        }
+
         function unlockTeacherView() {
             const input = document.getElementById('teacher-pin-input').value;
             if (input === "1234") {
                 document.getElementById('teacher-lock-screen').style.display = 'none';
                 document.getElementById('teacher-unlocked-screen').className = 'block';
+                
+                // Immediately render grid to display the dynamic flashing target on the game board
+                renderGrid(levels[currentIdx].size);
             } else {
                 document.getElementById('teacher-pin-err').className = 'text-xs text-red-500 block font-bold';
             }
@@ -874,6 +988,11 @@
 
         function closeTeacherModal() {
             document.getElementById('teacher-help-modal').style.display = 'none';
+            // If the user canceled and chose not to spend the token, clear the suggestion
+            if (document.getElementById('teacher-unlocked-screen').classList.contains('hidden')) {
+                peerSuggestion = null;
+                renderGrid(levels[currentIdx].size);
+            }
         }
 
         /* General Modal Controls */
