@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>קצר חשמלי - הכנה ל-720</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Retro & Hebrew vibes -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Mono+One&family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: #03010a;
+            background-image: 
+                radial-gradient(circle at 50% 50%, #110924 0%, #020105 100%),
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 100%, 100% 4px, 4px 100%;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* Arcade CRT Screen effect and frame */
+        .arcade-cabinet {
+            border: 6px solid #4c1d95;
+            box-shadow: 
+                0 0 0 4px #1e1b4b,
+                0 0 25px #a855f7,
+                inset 0 0 30px rgba(0,0,0,0.95);
+            background: #070311;
+        }
+
+        .retro-title {
+            font-family: 'Rubik Mono One', sans-serif;
+            text-shadow: 3px 3px 0px #db2777, -1px -1px 0px #2563eb, 0 0 15px #f472b6;
+        }
+
+        .retro-sub {
+            font-family: 'Press Start 2P', cursive;
+            color: #38bdf8;
+            text-shadow: 2px 2px 0px #0369a1, 0 0 8px rgba(56, 189, 248, 0.5);
+        }
+
+        .retro-font-numbers {
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* 8-bit Pixel Button / Bulb styling */
+        .pixel-bulb {
+            position: relative;
+            image-rendering: pixelated;
+            border-style: solid;
+            border-width: 4px;
+            transition: all 0.1s ease;
+        }
+
+        /* OFF state - Red bevel bulb */
+        .pixel-bulb-off {
+            background-color: #991b1b;
+            border-color: #f87171 #7f1d1d #7f1d1d #f87171;
+            box-shadow: inset 2px 2px 0px rgba(255,255,255,0.2), 0 4px 0px #450a0a;
+        }
+        .pixel-bulb-off:active {
+            transform: translateY(2px);
+            box-shadow: inset 2px 2px 0px rgba(255,255,255,0.2), 0 1px 0px #450a0a;
+        }
+
+        /* ON state - Green glowing bevel bulb */
+        .pixel-bulb-on {
+            background-color: #10b981;
+            border-color: #a7f3d0 #047857 #047857 #a7f3d0;
+            box-shadow: 
+                inset 2px 2px 0px rgba(255,255,255,0.4), 
+                0 4px 0px #064e3b,
+                0 0 15px #10b981;
+        }
+        .pixel-bulb-on:active {
+            transform: translateY(2px);
+            box-shadow: inset 2px 2px 0px rgba(255,255,255,0.4), 0 1px 0px #064e3b, 0 0 10px #10b981;
+        }
+
+        /* Board Win Flash Animation */
+        @keyframes board-win-flash {
+            0%, 50%, 100% { filter: brightness(1.8) drop-shadow(0 0 20px #10b981); }
+            25%, 75% { filter: brightness(1); }
+        }
+        .board-win-active {
+            animation: board-win-flash 0.3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* Suggestion flash for help */
+        @keyframes pixel-flash {
+            0%, 100% { border-color: #facc15; box-shadow: 0 0 20px #facc15; }
+            50% { border-color: #ca8a04; box-shadow: 0 0 0px transparent; }
+        }
+        .pixel-flash-active {
+            animation: pixel-flash 0.8s infinite;
+        }
+
+        /* Retro Controls */
+        .arcade-btn {
+            border-style: solid;
+            border-width: 3px;
+            border-color: #94a3b8 #334155 #334155 #94a3b8;
+            box-shadow: 0 4px 0px #1e293b;
+            transition: all 0.1s;
+        }
+        .arcade-btn:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0px #1e293b;
+        }
+
+        .arcade-btn-pink {
+            background-color: #ec4899;
+            border-color: #fbcfe8 #9d174d #9d174d #fbcfe8;
+            box-shadow: 0 4px 0px #701a34;
+        }
+        .arcade-btn-pink:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0px #701a34;
+        }
+
+        .arcade-btn-blue {
+            background-color: #3b82f6;
+            border-color: #bfdbfe #1d4ed8 #1d4ed8 #bfdbfe;
+            box-shadow: 0 4px 0px #1e3a8a;
+        }
+        .arcade-btn-blue:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0px #1e3a8a;
+        }
+
+        .arcade-btn-yellow {
+            background-color: #eab308;
+            border-color: #fef08a #a16207 #a16207 #fef08a;
+            box-shadow: 0 4px 0px #713f12;
+        }
+        .arcade-btn-yellow:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0px #713f12;
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-between p-3 md:p-6 select-none">
+
+    <!-- Top Scoreboard -->
+    <header class="w-full max-w-4xl mx-auto mb-4 flex flex-wrap items-center justify-between gap-4 bg-black/60 p-4 rounded-xl border-2 border-slate-800">
+        <div class="text-right">
+            <h1 class="text-2xl md:text-3xl font-black text-pink-500 retro-title tracking-wider">קצר חשמלי</h1>
+            <p class="retro-sub mt-2 text-md md:text-lg" style="font-size: 14px;">הכנה ל-720</p>
+        </div>
+        
+        <div class="flex items-center gap-6">
+            <div class="text-center">
+                <div class="text-[10px] md:text-xs text-slate-400 font-bold mb-1">SCORE (ניקוד)</div>
+                <div class="text-lg md:text-2xl font-black text-yellow-400 retro-font-numbers" id="score-display">10000</div>
+            </div>
+            <div class="h-8 w-[2px] bg-slate-800"></div>
+            <div class="text-center">
+                <div class="text-[10px] md:text-xs text-slate-400 font-bold mb-1">STAGE (שלב)</div>
+                <div class="text-lg md:text-2xl font-black text-green-400 retro-font-numbers" id="stage-display">01/20</div>
+            </div>
+            <div class="h-8 w-[2px] bg-slate-800"></div>
+            <div class="text-center">
+                <div class="text-[10px] md:text-xs text-slate-400 font-bold mb-1">MOVES (מהלכים)</div>
+                <div class="text-lg md:text-2xl font-black text-cyan-400 retro-font-numbers" id="moves-display">00/--</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Arcade Cabinet Layout -->
+    <main class="w-full max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Game Screen (CRT Monitor representation) -->
+        <section class="lg:col-span-7 flex flex-col items-center">
+            <div class="w-full arcade-cabinet p-6 rounded-3xl flex flex-col items-center relative overflow-hidden">
+                
+                <!-- Scanline simulation effect on screen -->
+                <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] z-20"></div>
+
+                <div class="mb-4 text-center z-10">
+                    <h3 class="text-lg md:text-xl font-extrabold text-pink-400 tracking-wide" id="level-title-display">שלב 1: הניצוץ הראשון</h3>
+                </div>
+
+                <!-- Board Container -->
+                <div class="bg-black/80 p-6 rounded-2xl border-4 border-slate-900 shadow-2xl mb-6 z-10 flex items-center justify-center min-h-[300px] w-full max-w-[360px]">
+                    <div id="grid-container" class="grid gap-3 justify-center mx-auto transition-all">
+                        <!-- Instantiated via JS -->
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="w-full flex justify-center gap-4 z-10">
+                    <button onclick="restartStage()" class="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold text-sm rounded-xl arcade-btn border-red-400 active:scale-95 transition">
+                        אתחל שלב ↺
+                    </button>
+                    <button onclick="showInstructions()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl arcade-btn border-slate-600">
+                        הוראות
+                    </button>
+                    <button onclick="toggleFullScreen()" class="px-4 py-2.5 bg-cyan-800 hover:bg-cyan-700 text-slate-100 font-bold text-xs rounded-xl arcade-btn border-cyan-600">
+                        מסך מלא 🖥️
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Help & Tips Console Panel -->
+        <section class="lg:col-span-5 flex flex-col gap-4">
+            
+            <!-- Tip Deck Console -->
+            <div class="bg-slate-900/90 border-4 border-slate-800 p-5 rounded-3xl shadow-xl">
+                
+                <!-- Crucial scoring display -->
+                <div class="bg-red-950/40 border border-red-500/30 p-3 rounded-xl mb-4 text-center">
+                    <p class="text-xs font-bold text-red-400">
+                        ⚠️ שים לב: שימוש בטיפ מפחית מהניקוד שלך!
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    
+                    <!-- Tip 1: חשיבה לעומק -->
+                    <div class="bg-black/50 p-4 rounded-xl border border-slate-800 flex items-center justify-between gap-3">
+                        <div class="text-right">
+                            <div class="text-xs text-rose-400 font-black tracking-widest uppercase mb-1">עלות: 150- נק׳</div>
+                            <h4 class="text-md font-bold text-slate-100">חשיבה לעומק</h4>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-xs bg-slate-900 px-2 py-1 rounded text-slate-400 retro-font-numbers border border-slate-800">
+                                x<span id="token-count-self">0</span>
+                            </div>
+                            <button id="btn-tip-self" onclick="triggerSelfHelp()" class="px-4 py-2 text-xs font-bold rounded-lg arcade-btn arcade-btn-blue text-white disabled:opacity-30 disabled:pointer-events-none">
+                                הפעל
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tip 2: עזרה מחבר -->
+                    <div class="bg-black/50 p-4 rounded-xl border border-slate-800 flex items-center justify-between gap-3">
+                        <div class="text-right">
+                            <div class="text-xs text-rose-400 font-black tracking-widest uppercase mb-1">עלות: 300- נק׳</div>
+                            <h4 class="text-md font-bold text-slate-100">עזרה מחבר</h4>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-xs bg-slate-900 px-2 py-1 rounded text-slate-400 retro-font-numbers border border-slate-800">
+                                x<span id="token-count-peer">0</span>
+                            </div>
+                            <button id="btn-tip-peer" onclick="triggerPeerHelp()" class="px-4 py-2 text-xs font-bold rounded-lg arcade-btn arcade-btn-yellow text-slate-950 disabled:opacity-30 disabled:pointer-events-none">
+                                הפעל
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tip 3: פנייה למורה -->
+                    <div class="bg-black/50 p-4 rounded-xl border border-slate-800 flex items-center justify-between gap-3">
+                        <div class="text-right">
+                            <div class="text-xs text-rose-400 font-black tracking-widest uppercase mb-1">עלות: 500- נק׳</div>
+                            <h4 class="text-md font-bold text-slate-100">פנייה למורה</h4>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-xs bg-slate-900 px-2 py-1 rounded text-slate-400 retro-font-numbers border border-slate-800">
+                                x<span id="token-count-teacher">0</span>
+                            </div>
+                            <button id="btn-tip-teacher" onclick="triggerTeacherHelp()" class="px-4 py-2 text-xs font-bold rounded-lg arcade-btn arcade-btn-pink text-white disabled:opacity-30 disabled:pointer-events-none">
+                                פנה
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals Overlay System -->
+    
+    <!-- Reward Choice / Success Selection Modal -->
+    <div id="reward-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-4 border-emerald-500 p-6 rounded-2xl max-w-md w-full text-center shadow-2xl relative">
+            <div class="text-5xl mb-3">🎁</div>
+            <h3 class="text-xl font-black mb-2 text-emerald-400">השלב פוצח בהצלחה!</h3>
+            <p class="text-xs text-slate-300 leading-relaxed mb-6">
+                בונוס 1,000+ נקודות הוענק לך! כעת, בחר טיפ אחד לקבלת תגמול (תוספת +1 למלאי):
+            </p>
+            <div class="flex flex-col gap-3 mb-6">
+                <button onclick="claimReward('self')" class="py-3 bg-blue-700 hover:bg-blue-600 text-white font-bold rounded-xl text-sm border-2 border-blue-400 arcade-btn">
+                    +1 חשיבה לעומק
+                </button>
+                <button onclick="claimReward('peer')" class="py-3 bg-yellow-600 hover:bg-yellow-500 text-slate-950 font-bold rounded-xl text-sm border-2 border-yellow-300 arcade-btn">
+                    +1 עזרה מחבר
+                </button>
+                <button onclick="claimReward('teacher')" class="py-3 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl text-sm border-2 border-pink-400 arcade-btn">
+                    +1 פנייה למורה
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fail Modal -->
+    <div id="fail-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-4 border-red-500 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl relative">
+            <div class="text-5xl mb-3">💥</div>
+            <h3 id="fail-modal-title" class="text-xl font-black mb-2 text-red-500">קצר חשמלי!</h3>
+            <p id="fail-modal-desc" class="text-xs text-slate-300 leading-relaxed mb-6">אזלו כל המהלכים המותרים לשלב זה.</p>
+            <button onclick="handleFailAcknowledge()" class="px-6 py-2 bg-red-600 border-red-400 border-2 rounded-xl text-white font-bold arcade-btn text-sm w-full">
+                נסה שוב ↺
+            </button>
+        </div>
+    </div>
+
+    <!-- Final Game Win Modal -->
+    <div id="game-win-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-4 border-yellow-500 p-6 rounded-2xl max-w-md w-full text-center shadow-2xl">
+            <div class="text-6xl mb-3">👑</div>
+            <h3 class="text-2xl font-black mb-2 text-yellow-400">אלוף החשמל!</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-6">
+                כל הכבוד! הצלחת לפרוץ ולייצב את כל 20 מערכות האנרגיה בלוח!
+            </p>
+            <button onclick="resetGameEntirely()" class="w-full py-3 bg-yellow-600 hover:bg-yellow-500 text-slate-950 font-bold rounded-xl text-sm border-2 border-yellow-300 arcade-btn">
+                שחק שוב מהתחלה ↺
+            </button>
+        </div>
+    </div>
+
+    <!-- Text Tip View Modal -->
+    <div id="text-tip-modal" class="fixed inset-0 bg-black/85 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-4 border-cyan-500 p-6 rounded-2xl max-w-sm w-full shadow-2xl">
+            <h3 class="text-lg font-black text-cyan-400 mb-3 flex items-center gap-2">🧠 חשיבה לעומק</h3>
+            <p id="text-tip-content" class="text-sm text-slate-200 leading-relaxed bg-black/50 p-4 rounded-xl border border-slate-800 mb-6">
+                טוען...
+            </p>
+            <button onclick="closeTextTipModal()" class="w-full py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold text-sm arcade-btn border-cyan-400">
+                אוקיי, אחזור לנסות!
+            </button>
+        </div>
+    </div>
+
+    <!-- Teacher Help Portal Modal -->
+    <div id="teacher-help-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-4 border-pink-500 p-6 rounded-2xl max-w-md w-full shadow-2xl">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-lg font-black text-pink-400 flex items-center gap-2">🦉 פנייה למורה</h3>
+                <button onclick="closeTeacherModal()" class="text-slate-400 hover:text-white font-black text-xl">✕</button>
+            </div>
+
+            <div id="teacher-lock-screen" class="text-center py-6">
+                <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                    פורטל זה מיועד למורה בלבד על מנת להציג שאלה מנחה מתאימה לשלב.
+                </p>
+                <div class="flex justify-center gap-2 mb-4">
+                    <input type="password" id="teacher-pin-input" placeholder="קוד מורה (1234)" class="px-4 py-2 bg-black text-slate-200 rounded-xl border-2 border-slate-800 text-center font-bold focus:outline-none focus:border-pink-500 text-sm w-44">
+                    <button onclick="unlockTeacherView()" class="px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl text-sm arcade-btn border-pink-400">פתח</button>
+                </div>
+                <p id="teacher-pin-err" class="text-xs text-red-500 hidden font-bold">קוד שגוי. נסה שוב!</p>
+            </div>
+
+            <div id="teacher-unlocked-screen" class="hidden">
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-4">
+                    <span class="text-xs text-slate-500 uppercase tracking-wider block mb-1">שאלה מנחה להצגה לתלמיד:</span>
+                    <p id="teacher-question-text" class="text-sm font-bold text-slate-200 leading-relaxed">
+                        טוען...
+                    </p>
+                </div>
+                <div class="bg-black/40 p-3 rounded-lg border border-slate-900 mb-6 text-xs text-slate-500">
+                    <span class="font-bold">אסטרטגיה מומלצת לשלב:</span>
+                    <p id="teacher-tip-text" class="mt-1">טוען...</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="confirmTeacherHelpConsumption()" class="flex-grow py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm arcade-btn border-emerald-400">
+                        אישור וניצול אסימון עזרה
+                    </button>
+                    <button onclick="closeTeacherModal()" class="px-4 py-2.5 bg-slate-800 text-slate-300 rounded-xl font-bold text-sm arcade-btn border-slate-600">
+                        ביטול
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions / Retro Intro Screen -->
+    <div id="instructions-modal" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-950 border-4 border-cyan-500 p-6 rounded-3xl max-w-lg w-full shadow-2xl relative overflow-hidden">
+            <!-- Retro decor lines -->
+            <div class="absolute inset-0 bg-radial-gradient pointer-events-none opacity-20"></div>
+
+            <h3 class="text-2xl md:text-3xl font-black text-cyan-400 retro-title text-center mb-1">קצר חשמלי ⚡</h3>
+            <p class="text-center font-bold text-pink-500 mb-6 tracking-widest text-xs uppercase">הכנה ל-720</p>
+            
+            <div class="text-xs sm:text-sm text-slate-300 space-y-4 leading-relaxed mb-6 border-y-2 border-slate-800 py-4 max-h-[300px] overflow-y-auto pr-2">
+                <p>
+                    <span class="text-yellow-400 font-bold">משימה:</span> להפוך את כל פנסי המערכת שעל הלוח לצבע <span class="text-green-400 font-bold">ירוק</span>.
+                </p>
+                <p>
+                    <span class="text-yellow-400 font-bold">אינטראקציה:</span> לחיצה על פנס משנה אותו ואת השכנים שלו (למעלה, למטה, ימין ושמאל).
+                </p>
+                <p>
+                    <span class="text-yellow-400 font-bold">קשיים:</span> בשלבים מתקדמים תהיה מכסת מהלכים קשוחה. אם תתעקש ללחוץ סתם מבלי לתכנן, המערכת תינעל!
+                </p>
+                <p>
+                    <span class="text-rose-400 font-bold">הטיפים כמנוע עזרה:</span> פתיחת טיפ עוזרת לך להתקדם, אך <span class="text-red-400 font-bold">מפחיתה מהניקוד שלך באופן מיידי</span>!
+                </p>
+                <p>
+                    <span class="text-emerald-400 font-bold">צבירת טיפים:</span> אתה מתחיל את המשחק עם <span class="text-red-400 font-bold">0 טיפים</span>. עם מעבר כל שלב בהצלחה, תקבל בונוס ניקוד ותבחר טיפ אחד להוספה למלאי שלך!
+                </p>
+                <div class="p-3 bg-cyan-950/40 border border-cyan-500/20 rounded-xl text-cyan-300 text-xs text-center font-bold">
+                    💡 מומלץ להעביר את המשחק למצב מסך מלא לצפייה וריכוז מרביים!
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="toggleFullScreen();" class="px-4 py-2.5 bg-purple-800 hover:bg-purple-700 text-slate-100 font-bold text-xs rounded-xl arcade-btn border-purple-600 sm:w-1/3">
+                    מסך מלא 🖥️
+                </button>
+                <button onclick="closeInstructions()" class="flex-grow py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold text-sm arcade-btn border-cyan-400">
+                    כנס למשחק 🕹️
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Web Audio Synthesizer (Retro Sounds Generator)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            try {
+                // Resume audioContext if suspended (browser security policies)
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'click') {
+                    // Quick high pitch chirp
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.15);
+                } else if (type === 'win') {
+                    // Upward 8-bit scale
+                    const now = audioCtx.currentTime;
+                    osc.type = 'square';
+                    gain.gain.setValueAtTime(0.1, now);
+                    
+                    osc.frequency.setValueAtTime(261.63, now); // C4
+                    osc.frequency.setValueAtTime(329.63, now + 0.1); // E4
+                    osc.frequency.setValueAtTime(392.00, now + 0.2); // G4
+                    osc.frequency.setValueAtTime(523.25, now + 0.3); // C5
+                    
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.start();
+                    osc.stop(now + 0.5);
+                } else if (type === 'fail') {
+                    // Downward buzzer
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(60, audioCtx.currentTime + 0.4);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                }
+            } catch (e) {
+                console.log("Audio not supported or interaction required: ", e);
+            }
+        }
+
+        // Full Screen Toggle Action
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable full-screen mode: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // 20 levels carefully balanced, pre-simulated and verifiable
+        const levels = [
+            { id: 1, size: 3, name: "הניצוץ הראשון", initialFlips: [[1, 1]], limit: null,
+              selfTip: "נורה אדומה בודדת במרכז. הקלק עליה ישירות ותראה מה קורה!",
+              teacherQuestion: "היכן נמצא מרכז הכובד של המערכת המשתקפת כאן? האם לחיצה אחת תספיק?",
+              teacherStrategy: "יש ללחוץ על התא המרכזי (1,1) כדי לפתור את השלב במהלך אחד." },
+            
+            { id: 2, size: 3, name: "תנועת מלקחיים", initialFlips: [[0, 0], [2, 2]], limit: null,
+              selfTip: "נורות אדומות ממוקמות בפינות הנגדיות. נסה להשפיע עליהן על ידי בחירת תאים סמוכים.",
+              teacherQuestion: "אילו תאים משפיעים ישירות על הפינות הלא דולקות מבלי להפריע למרכז?",
+              teacherStrategy: "יש ללחוץ על הפינות הנגדיות הלא פעילות כדי להשלים את הלוח." },
+            
+            { id: 3, size: 3, name: "הקו הישר", initialFlips: [[0, 1], [1, 1], [2, 1]], limit: null,
+              selfTip: "שורה שלמה כבויה במרכז. נסה לראות כיצד לחיצה בקצוות השורה משפיעה על השאר.",
+              teacherQuestion: "אם נלחץ ישירות על מרכז השורה האדומה, כיצד הזרם יתפשט?",
+              teacherStrategy: "שילוב של לחיצה על התאים הקיצוניים של העמודה המרכזית יוביל לפתרון." },
+            
+            { id: 4, size: 4, name: "ריבוע כפול", initialFlips: [[1, 1], [2, 2]], limit: null,
+              selfTip: "כאן יש לנו מטריצה גדולה יותר של 4x4. הבט בסימטריה ובדוק אילו אלכסונים משפיעים זה על זה.",
+              teacherQuestion: "כיצד הגדלת הלוח משפיעה על כוח הלחיצות של הפינות לעומת המרכז?",
+              teacherStrategy: "לפתור באמצעות ביטול פנימי הדרגתי מהשוליים כלפי פנים." },
+            
+            { id: 5, size: 4, name: "ארבע פינות", initialFlips: [[0, 0], [0, 3], [3, 0], [3, 3]], limit: null,
+              selfTip: "ארבעת פינות הלוח כבויות. זכור כי לכל פינה יש רק שתי שכנות ישירות.",
+              teacherQuestion: "אם לכל פינה יש פחות שכנות, האם קל יותר להתחיל לפתור מהקצה?",
+              teacherStrategy: "לחיצה על התאים הסמוכים לפינות תנטרל אותן בקלות." },
+            
+            { id: 6, size: 4, name: "מבצר הניאון", initialFlips: [[1, 1], [1, 2], [2, 1], [2, 2]], limit: 10,
+              selfTip: "שים לב - החל משלב זה יש לך הגבלת מהלכים קשוחה! תכנן את הצעדים שלך מראש.",
+              teacherQuestion: "הלב המרכזי של הריבוע כבוי. אילו פעולות מבחוץ יכולות לעורר את המרכז?",
+              teacherStrategy: "שימוש בלחיצות סימטריות מהקצוות החיצוניים כדי לפתור ללא חריגה ממכסה." },
+            
+            { id: 7, size: 4, name: "מתח משתנה", initialFlips: [[0, 1], [1, 2], [2, 3], [3, 0]], limit: 12,
+              selfTip: "הקצרים החשמליים זזים הצידה באלכסון. חפש את נקודת האיזון הנגדית.",
+              teacherQuestion: "האם שמת לב למחזוריות של הכתמים האדומים? מה קורה כשאתה מנסה לאזן צד אחד?",
+              teacherStrategy: "לחיצה מדויקת לאורך קו האיזון הנגדי." },
+            
+            { id: 8, size: 5, name: "ברוכים הבאים ל-5X5", initialFlips: [[2, 2]], limit: 14,
+              selfTip: "מטריצה גדולה של 5x5. המרכז כבוי. הזרם זורם רחוק יותר, פעל במעגלים.",
+              teacherQuestion: "המרחב הולך וגדל. כיצד תבטיח שלא תלך לאיבוד בלולאות לחיצה אינסופיות?",
+              teacherStrategy: "עבודה שיטתית ולימוד תבנית המרחק מהמרכז." },
+            
+            { id: 9, size: 5, name: "הצלב הגדול", initialFlips: [[1, 1], [1, 3], [3, 1], [3, 3]], limit: 15,
+              selfTip: "ארבע נורות אדומות מבודדות. נסה למשוך אותן לכיוון המרכז או הקצוות כדי לאחדן.",
+              teacherQuestion: "אילו תאים ימשכו את האנרגיה האדומה למבנה אחד פשוט לפתרון?",
+              teacherStrategy: "איחוד האורות על ידי לחיצה פנימית ביניהם." },
+            
+            { id: 10, size: 5, name: "לוח שחמט", initialFlips: [[0, 2], [2, 0], [2, 4], [4, 2], [2, 2]], limit: 16,
+              selfTip: "שלב מורכב במיוחד. תבנית סימטרית אך רחבה. נסה לפתור מלמעלה למטה.",
+              teacherQuestion: "נסה את שיטת 'רדיפת האורות': הורד את כל הנורות האדומות לשורה התחתונה ואז פתור אותן משם.",
+              teacherStrategy: "השתמש בטכניקת Chase the Lights המאפשרת פתרון שיטתי של לוח לייטס-אאוט." },
+            
+            { id: 11, size: 5, name: "הסערה השקטה", initialFlips: [[0, 0], [0, 4], [4, 0], [4, 4], [1, 2], [3, 2]], limit: 18,
+              selfTip: "הפינות הקיצוניות דורשות עבודה מדויקת. אל תמהר להרוס שורות שכבר ירוקות.",
+              teacherQuestion: "כיצד נוכל לשמור על אזור ירוק קיים בזמן שאנו מתקנים את קצוות הלוח?",
+              teacherStrategy: "לחיצה עקיפה על תאים משניים המבודדים מהשורה הפתורה." },
+            
+            { id: 12, size: 5, name: "מילניום סופי", initialFlips: [[0, 1], [1, 3], [2, 0], [3, 4], [4, 2], [1, 1], [3, 3]], limit: 20,
+              selfTip: "רמת המורכבות גבוהה מאוד. חפש מקבצי אורות קרובים ופתור אותם קודם.",
+              teacherQuestion: "שלב זה מאתגר מאוד. האם תרצה שנתמקד בשחזור השורה הראשונה תחילה?",
+              teacherStrategy: "פירוק הדרגתי מלמעלה למטה." },
+            
+            { id: 13, size: 6, name: "מטריצת ענק 6X6", initialFlips: [[1, 1], [2, 4], [4, 2], [3, 3]], limit: 22,
+              selfTip: "הגעת ללוח 6x6 ענקי! החוקים זהים אך המרחב עצום. פעל בקבוצות קטנות.",
+              teacherQuestion: "איך נוכל לחלק את המרחב העצום של 6x6 לתתי-אזורים קטנים יותר בראש?",
+              teacherStrategy: "חלוקת המטריצה לחלקים סימטריים קטנים." },
+            
+            { id: 14, size: 6, name: "עמודי התווך", initialFlips: [[0, 0], [5, 5], [0, 5], [5, 0], [2, 2], [3, 3]], limit: 24,
+              selfTip: "הפינות והמרכז כבויים. נסה ליצור גשרים של אור ביניהם.",
+              teacherQuestion: "אילו תאים מקשרים לוגית בין הפינות המרוחקות למרכז הלוח המשותף?",
+              teacherStrategy: "איזון מהפינות כלפי המרכז על ידי לחיצות ביניים." },
+            
+            { id: 15, size: 6, name: "מעבה המערכת", initialFlips: [[1, 2], [2, 3], [3, 4], [4, 1], [0, 0], [5, 5], [2, 2]], limit: 25,
+              selfTip: "כל המערכות קורסות. נצל את כל הכלים והידע שצברת.",
+              teacherQuestion: "הגעת לקצה המערכת. שלב את כל האסטרטגיות: רדיפת אורות, סימטריה וסבלנות.",
+              teacherStrategy: "זהו השלב הקשה ביותר. לחיצות מבוקרות וסיוע של המורה יובילו לניצחון." },
+
+            // NEW BALANCED LEVELS FROM 16 TO 20
+            { id: 16, size: 4, name: "זרימה פנימית", initialFlips: [[0, 0], [1, 1], [2, 2], [3, 3], [0, 3], [3, 0]], limit: 14,
+              selfTip: "האלכסונים הכפולים נעולים. התחל לשחרר מהמרכז כדי ליצור חופש תנועה.",
+              teacherQuestion: "כיצד תבנית ה-X הנוצרת על הלוח משפיעה על השורה העליונה?",
+              teacherStrategy: "יש לפתור מהמרכז החוצה לפינות." },
+
+            { id: 17, size: 5, name: "מבוך תדרים", initialFlips: [[0, 1], [1, 1], [2, 1], [3, 1], [4, 3], [1, 4]], limit: 16,
+              selfTip: "קווים אנכיים מבודדים. שים לב כי שימוש בטיפ חשיבה יעניק לך בדיוק את נקודת האיזון.",
+              teacherQuestion: "מדוע העמודה השנייה משפיעה כל כך חזק על פינות הימין?",
+              teacherStrategy: "שילוב שיטת רדיפת אורות להורדת כל המורכבות לתחתית המטריצה." },
+
+            { id: 18, size: 5, name: "לוח תהודה", initialFlips: [[1, 0], [0, 1], [4, 3], [3, 4], [2, 2]], limit: 18,
+              selfTip: "לוח כמעט ירוק, אך הקצוות משובשים. השתמש ברמז חבר ללחיצה סודית.",
+              teacherQuestion: "האם לחיצה בפינות תעזור ליישר את המצב או שמא עדיף לפעול ממרכז המטריצה?",
+              teacherStrategy: "יש לנטרל את השבירות הללו ישירות מתאי הקצה." },
+
+            { id: 19, size: 6, name: "שרשרת הולכה", initialFlips: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]], limit: 24,
+              selfTip: "קשר מורכב באלכסונים רצופים. תכנן צעדים מבוקרים.",
+              teacherQuestion: "איזו סדרת תאים מהווה את 'עמוד השדרה' של הלוח הנתון?",
+              teacherStrategy: "פתרון הדרגתי שורה אחר שורה." },
+
+            { id: 20, size: 6, name: "קצר אחרון", initialFlips: [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [0, 5], [5, 0], [2, 3], [3, 2]], limit: 26,
+              selfTip: "האתגר האולטימטיבי! התחל מהמרכז ומשוך את כל האדומים לקצוות העליונים.",
+              teacherQuestion: "הגעת לשלב האחרון! נסה לשלב את כל הכלים שלמדת לאורך המסלול.",
+              teacherStrategy: "שלב מורכב במיוחד. ליווי קפדני ורפלקציה בזמן אמת." }
+        ];
+
+        // Core Game States
+        let currentIdx = 0;
+        let score = 10000;
+        let moves = 0;
+        let board = [];
+        let peerSuggestion = null;
+
+        // Help Resources Stock (Starts at 0!)
+        let helpStock = {
+            self: 0,
+            peer: 0,
+            teacher: 0
+        };
+
+        // Initialize App on load
+        function initStage() {
+            const level = levels[currentIdx];
+            moves = 0;
+            peerSuggestion = null;
+
+            // Header Updates
+            document.getElementById('stage-display').innerText = `${String(level.id).padStart(2, '0')}/${String(levels.length).padStart(2, '0')}`;
+            document.getElementById('level-title-display').innerText = `שלב ${level.id}: ${level.name}`;
+            document.getElementById('moves-display').innerText = `00/${level.limit ? String(level.limit).padStart(2, '0') : '--'}`;
+
+            // Reset Board State with all elements ON (true)
+            board = Array(level.size).fill().map(() => Array(level.size).fill(true));
+
+            // Scramble Level based on pre-defined flips to guarantee solubility
+            level.initialFlips.forEach(([r, c]) => {
+                applyFlip(r, c, level.size);
+            });
+
+            const gridContainer = document.getElementById('grid-container');
+            gridContainer.classList.remove('board-win-active'); // Clean win animations
+
+            renderGrid(level.size);
+            updateUI();
+        }
+
+        // Render HTML Board elements
+        function renderGrid(size) {
+            const gridContainer = document.getElementById('grid-container');
+            gridContainer.innerHTML = '';
+            gridContainer.style.gridTemplateColumns = `repeat(${size}, minmax(40px, 55px))`;
+
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    const bulbBtn = document.createElement('button');
+                    bulbBtn.id = `bulb-${r}-${c}`;
+                    bulbBtn.className = `pixel-bulb aspect-square rounded-lg cursor-pointer ${board[r][c] ? 'pixel-bulb-on' : 'pixel-bulb-off'}`;
+                    
+                    // Apply Peer suggestion animation if active
+                    if (peerSuggestion && peerSuggestion.r === r && peerSuggestion.c === c) {
+                        bulbBtn.classList.add('pixel-flash-active');
+                    }
+
+                    bulbBtn.onclick = () => onBulbClick(r, c);
+                    gridContainer.appendChild(bulbBtn);
+                }
+            }
+        }
+
+        // Applies Lights Out flip rule
+        function applyFlip(r, c, size) {
+            const directions = [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]];
+            directions.forEach(([dr, dc]) => {
+                const nr = r + dr;
+                const nc = c + dc;
+                if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
+                    board[nr][nc] = !board[nr][nc];
+                }
+            });
+        }
+
+        // Handle user interaction with bulbs
+        function onBulbClick(r, c) {
+            const level = levels[currentIdx];
+
+            if (level.limit && moves >= level.limit) {
+                triggerFail("נגמרו המהלכים!", "חרגת ממכסת המהלכים המותרת לשלב זה. המערכת נכנסה לקצר חשמלי.");
+                return;
+            }
+
+            playSound('click');
+            applyFlip(r, c, level.size);
+            moves++;
+            score = Math.max(0, score - 10); // Minus 10 points for every active move
+            
+            // Clear peer guidance suggestion once a move is made
+            if (peerSuggestion) {
+                peerSuggestion = null;
+            }
+
+            document.getElementById('moves-display').innerText = `${String(moves).padStart(2, '0')}/${level.limit ? String(level.limit).padStart(2, '0') : '--'}`;
+            updateUI();
+            renderGrid(level.size);
+
+            checkVictory();
+        }
+
+        // Evaluate victory conditions
+        function checkVictory() {
+            const level = levels[currentIdx];
+            let won = true;
+
+            for (let r = 0; r < level.size; r++) {
+                for (let c = 0; c < level.size; c++) {
+                    if (!board[r][c]) {
+                        won = false;
+                        break;
+                    }
+                }
+            }
+
+            if (won) {
+                playSound('win');
+                // Visual feedback: Flash the board to let them see everything is green!
+                const gridContainer = document.getElementById('grid-container');
+                gridContainer.classList.add('board-win-active');
+
+                // Delay the modal by 1.5 seconds so they can enjoy the victory
+                setTimeout(() => {
+                    gridContainer.classList.remove('board-win-active');
+                    score += 1000;
+                    showRewardModal();
+                }, 1500);
+
+            } else if (level.limit && moves >= level.limit) {
+                setTimeout(() => {
+                    triggerFail("קצר חשמלי טוטאלי!", "אזלו כל המהלכים המותרים ולא הצלחת לייצב את השלב.");
+                }, 300);
+            }
+        }
+
+        // Helper to update Score, Tokens UI state and counters
+        function updateUI() {
+            document.getElementById('score-display').innerText = score;
+            
+            // Tokens indicator text updates
+            document.getElementById('token-count-self').innerText = helpStock.self;
+            document.getElementById('token-count-peer').innerText = helpStock.peer;
+            document.getElementById('token-count-teacher').innerText = helpStock.teacher;
+
+            // Enable or disable trigger buttons based on stock
+            document.getElementById('btn-tip-self').disabled = (helpStock.self <= 0);
+            document.getElementById('btn-tip-peer').disabled = (helpStock.peer <= 0);
+            document.getElementById('btn-tip-teacher').disabled = (helpStock.teacher <= 0);
+        }
+
+        // Reset stage action
+        function restartStage() {
+            initStage();
+        }
+
+        /* Reward System Controls */
+        function showRewardModal() {
+            document.getElementById('reward-modal').style.display = 'flex';
+        }
+
+        function claimReward(type) {
+            // Increments the selected tip token inventory by 1
+            if (type === 'self') helpStock.self++;
+            if (type === 'peer') helpStock.peer++;
+            if (type === 'teacher') helpStock.teacher++;
+
+            document.getElementById('reward-modal').style.display = 'none';
+            updateUI();
+
+            // Proceed to next level or show game victory
+            if (currentIdx < levels.length - 1) {
+                currentIdx++;
+                initStage();
+            } else {
+                document.getElementById('game-win-modal').style.display = 'flex';
+            }
+        }
+
+        function resetGameEntirely() {
+            currentIdx = 0;
+            score = 10000;
+            helpStock = { self: 0, peer: 0, teacher: 0 };
+            document.getElementById('game-win-modal').style.display = 'none';
+            initStage();
+        }
+
+        /* Tip System Actions */
+
+        // Tip 1: חשיבה לעומק
+        function triggerSelfHelp() {
+            if (helpStock.self <= 0) return;
+
+            // Deduct Points
+            score = Math.max(0, score - 150);
+            helpStock.self--;
+
+            const level = levels[currentIdx];
+            document.getElementById('text-tip-content').innerText = level.selfTip;
+            document.getElementById('text-tip-modal').style.display = 'flex';
+
+            updateUI();
+        }
+
+        function closeTextTipModal() {
+            document.getElementById('text-tip-modal').style.display = 'none';
+        }
+
+        // Tip 2: עזרה מחבר
+        function triggerPeerHelp() {
+            if (helpStock.peer <= 0) return;
+
+            // Deduct Points
+            score = Math.max(0, score - 300);
+            helpStock.peer--;
+
+            const level = levels[currentIdx];
+            // Take a random correct move of initial scrambling to guide the user back to correctness
+            const randIndex = Math.floor(Math.random() * level.initialFlips.length);
+            const targetCell = level.initialFlips[randIndex];
+
+            peerSuggestion = { r: targetCell[0], c: targetCell[1] };
+            renderGrid(level.size);
+
+            updateUI();
+        }
+
+        // Tip 3: פנייה למורה
+        function triggerTeacherHelp() {
+            if (helpStock.teacher <= 0) return;
+
+            const level = levels[currentIdx];
+
+            // Setup elements in teacher portal
+            document.getElementById('teacher-question-text').innerText = level.teacherQuestion;
+            document.getElementById('teacher-tip-text').innerText = level.teacherStrategy;
+
+            // Lock screen setup
+            document.getElementById('teacher-lock-screen').style.display = 'block';
+            document.getElementById('teacher-unlocked-screen').className = 'hidden';
+            document.getElementById('teacher-pin-err').className = 'text-xs text-red-500 hidden font-bold';
+            document.getElementById('teacher-pin-input').value = '';
+
+            document.getElementById('teacher-help-modal').style.display = 'flex';
+        }
+
+        function unlockTeacherView() {
+            const input = document.getElementById('teacher-pin-input').value;
+            if (input === "1234") {
+                document.getElementById('teacher-lock-screen').style.display = 'none';
+                document.getElementById('teacher-unlocked-screen').className = 'block';
+            } else {
+                document.getElementById('teacher-pin-err').className = 'text-xs text-red-500 block font-bold';
+            }
+        }
+
+        function confirmTeacherHelpConsumption() {
+            // Deduct Points and stock
+            score = Math.max(0, score - 500);
+            helpStock.teacher--;
+
+            updateUI();
+            closeTeacherModal();
+        }
+
+        function closeTeacherModal() {
+            document.getElementById('teacher-help-modal').style.display = 'none';
+        }
+
+        /* General Modal Controls */
+
+        function triggerFail(heading, message) {
+            playSound('fail');
+            const modal = document.getElementById('fail-modal');
+            document.getElementById('fail-modal-title').innerText = heading;
+            document.getElementById('fail-modal-desc').innerText = message;
+            modal.style.display = 'flex';
+        }
+
+        function handleFailAcknowledge() {
+            document.getElementById('fail-modal').style.display = 'none';
+            restartStage();
+        }
+
+        // Instructions screen controls
+        function closeInstructions() {
+            document.getElementById('instructions-modal').style.display = 'none';
+        }
+
+        function showInstructions() {
+            document.getElementById('instructions-modal').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
