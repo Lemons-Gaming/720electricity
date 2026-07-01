@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.6" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- black retro tile -->
+  <rect x="2" y="2" width="60" height="60" rx="10" fill="#050109"/>
+  <rect x="2" y="2" width="60" height="60" rx="10" fill="none" stroke="#4c1d95" stroke-width="3"/>
+  <!-- scanlines -->
+  <g fill="#ffffff" opacity="0.05">
+    <rect x="4" y="12" width="56" height="2"/>
+    <rect x="4" y="24" width="56" height="2"/>
+    <rect x="4" y="36" width="56" height="2"/>
+    <rect x="4" y="48" width="56" height="2"/>
+  </g>
+  <!-- 720 in retro pixel style -->
+  <text x="32" y="42" text-anchor="middle"
+        font-family="'Courier New', monospace" font-weight="900" font-size="26"
+        fill="#f472b6" filter="url(#glow)"
+        style="letter-spacing:-1px; paint-order:stroke; stroke:#2563eb; stroke-width:0.6px;">720</text>
+</svg>
