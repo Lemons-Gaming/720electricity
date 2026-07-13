@@ -25,7 +25,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts for Retro Arcade & Hebrew vibes -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Mono+One&family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;700;900&family=Press+Start+2P&family=Rubik+Mono+One&family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
         body {
@@ -44,7 +44,14 @@
 
         .retro-title {
             font-family: 'Rubik Mono One', sans-serif;
-            text-shadow: 4px 4px 0px #db2777, -2px -2px 0px #2563eb, 0 0 20px #f472b6;
+            font-weight: 900;
+            line-height: 1.05;
+            -webkit-text-stroke: 1px rgba(255,255,255,0.28);
+            paint-order: stroke fill;
+            text-shadow:
+                6px 6px 0px #db2777,
+                -3px -3px 0px #2563eb,
+                0 0 26px #f472b6;
         }
 
         .retro-title-sm {
@@ -53,6 +60,41 @@
 
         .retro-font-numbers {
             font-family: 'Press Start 2P', cursive;
+        }
+
+        .instructions-copy {
+            font-family: 'Heebo', 'Rubik', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            line-height: 1.55;
+            letter-spacing: 0;
+        }
+
+        .instructions-copy p {
+            padding: 0.5rem 0;
+            border-bottom: 2px solid #334155;
+        }
+
+        .instructions-copy p:last-child {
+            border-bottom: 0;
+        }
+
+        .instruction-label {
+            font-family: 'Heebo', 'Rubik', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 900;
+            color: #facc15;
+            letter-spacing: 0;
+        }
+
+        .instruction-label-alert {
+            color: #f87171;
+        }
+
+        @media (min-width: 640px) {
+            .instructions-copy {
+                font-size: 0.96rem;
+            }
         }
 
         /* Blocky Arcade Window */
@@ -78,43 +120,68 @@
             border-radius: 0;
         }
 
-        /* 8-bit Pixel Button / Bulb styling */
-        .pixel-bulb {
+        /* 8-bit Pixel-art Light Bulb cells */
+        .bulb-cell {
             position: relative;
-            image-rendering: pixelated;
-            border-style: solid;
-            border-width: 6px;
-            transition: none; /* Instant snap for retro feel */
+            background: transparent;
+            border: none;
+            padding: 4%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
             border-radius: 0;
+            image-rendering: pixelated;
+        }
+        .bulb-cell svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            image-rendering: pixelated;
+        }
+        .bulb-cell:active { transform: translate(2px, 2px); }
+
+        /* Dark pixel outline + metallic screw base (both states) */
+        .bulb-outline   { fill: #0c0a09; }
+        .bulb-base      { fill: #a1a1aa; }
+        .bulb-base-dark { fill: #52525b; }
+        .bulb-tip       { fill: #3f3f46; }
+
+        /* ON = warm yellow glowing bulb */
+        .bulb-on .bulb-glass     { fill: #facc15; }
+        .bulb-on .bulb-shade     { fill: #d97706; }
+        .bulb-on .bulb-highlight { fill: #fffbeb; }
+        .bulb-on .bulb-filament  { fill: #fffde7; }
+        .bulb-on svg {
+            filter: drop-shadow(0 0 4px #fde047) drop-shadow(0 0 10px rgba(250,204,21,0.55));
+            animation: bulb-flicker 5s infinite;
         }
 
-        /* OFF state - Red bevel bulb */
-        .pixel-bulb-off {
-            background-color: #991b1b;
-            border-color: #f87171 #450a0a #450a0a #f87171;
-            box-shadow: inset 4px 4px 0px rgba(255,255,255,0.15);
-        }
-        .pixel-bulb-off:active {
-            border-color: #450a0a #f87171 #f87171 #450a0a;
-            box-shadow: inset -4px -4px 0px rgba(255,255,255,0.15);
+        /* OFF = dark, cold unlit bulb */
+        .bulb-off .bulb-glass     { fill: #3f3f46; }
+        .bulb-off .bulb-shade     { fill: #27272a; }
+        .bulb-off .bulb-highlight { fill: #52525b; }
+        .bulb-off .bulb-filament  { fill: #5b5b62; }
+        .bulb-off svg { filter: none; }
+
+        /* Subtle idle flicker for lit bulbs (desynced per-cell via animation-delay) */
+        @keyframes bulb-flicker {
+            0%, 87%, 100% { opacity: 1; }
+            89% { opacity: 0.86; }
+            91% { opacity: 1; }
+            93% { opacity: 0.93; }
         }
 
-        /* ON state - Green glowing bevel bulb */
-        .pixel-bulb-on {
-            background-color: #10b981;
-            border-color: #a7f3d0 #064e3b #064e3b #a7f3d0;
-            box-shadow: 
-                inset 4px 4px 0px rgba(255,255,255,0.3),
-                0 0 15px #10b981;
+        /* One-shot spark flash when a bulb toggles on/off */
+        @keyframes bulb-spark {
+            0%   { filter: brightness(2.6) drop-shadow(0 0 10px #ffffff); }
+            100% { filter: brightness(1); }
         }
-        .pixel-bulb-on:active {
-            border-color: #064e3b #a7f3d0 #a7f3d0 #064e3b;
-            box-shadow: inset -4px -4px 0px rgba(255,255,255,0.3), 0 0 10px #10b981;
-        }
+        .bulb-spark svg { animation: bulb-spark 0.28s steps(3, end) !important; }
 
         /* Board Win Flash Animation */
         @keyframes board-win-flash {
-            0%, 50%, 100% { filter: brightness(2) drop-shadow(0 0 30px #10b981); }
+            0%, 50%, 100% { filter: brightness(2) drop-shadow(0 0 30px #fde047); }
             25%, 75% { filter: brightness(1); }
         }
         .board-win-active {
@@ -122,13 +189,48 @@
             pointer-events: none;
         }
 
-        /* Suggestion flash for help */
-        @keyframes pixel-flash {
-            0%, 100% { border-color: #fef08a; background-color: #ca8a04; }
-            50% { border-color: #a16207; background-color: #854d0e; }
+        /* Suggestion flash for help — target bulb blinks bright orange */
+        @keyframes bulb-hint-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
-        .pixel-flash-active {
-            animation: pixel-flash 0.5s steps(2, start) infinite !important;
+        .bulb-hint .bulb-glass     { fill: #f97316 !important; }
+        .bulb-hint .bulb-shade     { fill: #c2410c !important; }
+        .bulb-hint .bulb-highlight { fill: #ffedd5 !important; }
+        .bulb-hint .bulb-filament  { fill: #ffffff !important; }
+        .bulb-hint svg {
+            filter: drop-shadow(0 0 8px #f97316) drop-shadow(0 0 3px #fb923c) !important;
+            animation: bulb-hint-pulse 0.6s steps(2, start) infinite !important;
+        }
+
+
+
+        .intro-bulb-strip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            margin-bottom: 0.85rem;
+            padding: 0.4rem 0.7rem;
+            background: #020617;
+            border: 3px solid #334155;
+            box-shadow: inset 0 0 0 2px #000, 0 0 16px rgba(34,211,238,0.22);
+        }
+
+        .intro-bulb {
+            width: clamp(2.2rem, 8vw, 3.25rem);
+            height: clamp(2.75rem, 9vw, 4rem);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            image-rendering: pixelated;
+        }
+
+        .intro-bulb svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            image-rendering: pixelated;
         }
 
         /* Blocky Retro Buttons */
@@ -168,7 +270,7 @@
     <!-- Top Scoreboard (Arcade Style) -->
     <header class="w-full max-w-5xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-4 bg-black p-4 border-4 border-slate-700">
         <div class="text-right">
-            <h1 class="text-3xl md:text-5xl font-black text-pink-500 retro-title tracking-wider mb-2">קצר חשמלי</h1>
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-pink-500 retro-title tracking-wider mb-2">קצר חשמלי</h1>
             <p class="retro-font-numbers text-yellow-300 text-sm md:text-xl text-shadow-sm">הכנה ל-720</p>
         </div>
         
@@ -235,11 +337,11 @@
 
                 <div class="space-y-5">
                     
-                    <!-- Tip 1: חשיבה לעומק -->
+                    <!-- Tip 1: עזרה מהבוט -->
                     <div class="bg-slate-900 p-4 border-4 border-blue-600 flex items-center justify-between gap-3">
                         <div class="text-right">
                             <div class="text-[10px] text-blue-400 retro-font-numbers mb-2">-150 PTS</div>
-                            <h4 class="text-sm md:text-base retro-title-sm text-slate-100">חשיבה לעומק</h4>
+                            <h4 class="text-sm md:text-base retro-title-sm text-slate-100">עזרה מהבוט</h4>
                         </div>
                         <div class="flex items-center gap-3">
                             <div class="text-sm bg-black px-3 py-2 text-slate-300 retro-font-numbers border-2 border-slate-600">
@@ -270,12 +372,12 @@
                     <!-- Tip 3: פנייה למורה -->
                     <div class="bg-slate-900 p-4 border-4 border-pink-600 flex items-center justify-between gap-3">
                         <div class="text-right">
-                            <div class="text-[10px] text-pink-400 retro-font-numbers mb-2">-500 PTS</div>
+                            <div class="text-[10px] text-pink-400 retro-font-numbers mb-2">-1000 PTS</div>
                             <h4 class="text-sm md:text-base retro-title-sm text-slate-100">פנייה למורה</h4>
                         </div>
                         <div class="flex items-center gap-3">
                             <div class="text-sm bg-black px-3 py-2 text-slate-300 retro-font-numbers border-2 border-slate-600">
-                                x<span id="token-count-teacher">0</span>
+                                <span id="token-count-teacher">0/2</span>
                             </div>
                             <button id="btn-tip-teacher" onclick="triggerTeacherHelp()" class="px-4 py-3 text-xs retro-btn btn-pink text-white">
                                 פנה
@@ -316,7 +418,7 @@
             </p>
             <div class="flex flex-col gap-4 mb-2">
                 <button onclick="claimReward('self')" class="w-full py-4 text-white text-xs md:text-sm retro-btn btn-blue">
-                    +1 חשיבה לעומק
+                    +1 עזרה מהבוט
                 </button>
                 <button onclick="claimReward('peer')" class="w-full py-4 text-black text-xs md:text-sm retro-btn btn-yellow">
                     +1 עזרה מחבר
@@ -357,8 +459,8 @@
     <!-- Text Tip View Modal -->
     <div id="text-tip-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
         <div class="retro-window border-blue-500 max-w-sm w-full p-6 text-center">
-            <h3 class="text-lg retro-title-sm text-blue-400 mb-4">חשיבה לעומק</h3>
-            <p id="text-tip-content" class="text-sm text-slate-100 leading-loose bg-blue-950/30 p-4 border-2 border-blue-900 mb-6 font-bold">
+            <h3 class="text-lg retro-title-sm text-blue-400 mb-4">עזרה מהבוט</h3>
+            <p id="text-tip-content" class="text-sm text-slate-100 leading-loose bg-blue-950/30 p-4 border-2 border-blue-900 mb-6 font-bold whitespace-pre-line">
                 טוען...
             </p>
             <button onclick="closeTextTipModal()" class="w-full py-4 text-white text-sm retro-btn btn-blue">
@@ -369,7 +471,7 @@
 
     <!-- Teacher Help Portal Modal -->
     <div id="teacher-help-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
-        <div class="retro-window border-pink-500 max-w-md w-full p-6">
+        <div class="retro-window border-pink-500 max-w-lg w-full p-6 max-h-[calc(100vh-2rem)] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-lg retro-title-sm text-pink-400">פורטל מורה</h3>
                 <button onclick="closeTeacherModal()" class="text-slate-400 hover:text-white retro-title-sm text-xl">X</button>
@@ -377,75 +479,46 @@
 
             <div id="teacher-lock-screen" class="text-center">
                 <p class="text-xs text-slate-300 mb-6 leading-loose font-bold bg-pink-950/30 p-4 border-2 border-pink-900">
-                    מיועד למורה בלבד. הקלד קוד גישה לחשיפת ההכוונה וההסבר:
+                    לתלמיד מוצג XXXX. בקשו מהמורה את הקוד הנוכחי. קוד נכון ינצל שתי רכישות מורה ויהבהב בכל פעם את הנורה הבאה לפתרון:
                 </p>
                 <div class="flex flex-col gap-4 mb-4">
-                    <input type="password" id="teacher-pin-input" placeholder="CODE (1234)" class="px-4 py-3 bg-black text-pink-400 border-4 border-slate-700 text-center retro-font-numbers focus:outline-none focus:border-pink-500 w-full">
-                    <button onclick="unlockTeacherView()" class="w-full py-3 text-white text-sm retro-btn btn-pink">שחרר נעילה</button>
+                    <input type="password" id="teacher-pin-input" placeholder="XXXX" class="px-4 py-3 bg-black text-pink-400 border-4 border-slate-700 text-center retro-font-numbers focus:outline-none focus:border-pink-500 w-full">
+                    <button onclick="unlockTeacherView()" class="w-full py-3 text-white text-sm retro-btn btn-pink">התחל סימון</button>
                 </div>
                 <p id="teacher-pin-err" class="text-xs text-red-500 hidden retro-title-sm font-bold">קוד שגוי!</p>
             </div>
 
-            <div id="teacher-unlocked-screen" class="hidden">
-                <div class="bg-black p-4 border-2 border-slate-700 mb-4">
-                    <span class="text-[10px] text-pink-500 retro-title-sm block mb-2">מיקום התא המומלץ ללחיצה:</span>
-                    <p id="teacher-target-coords" class="text-md font-bold text-yellow-400 leading-loose retro-font-numbers text-center">
-                        שורה X, עמודה Y
-                    </p>
-                    <p class="text-xs text-slate-400 text-center mt-1">(התא מהבהב כעת בצבע צהוב על לוח המשחק!)</p>
-                </div>
-                <div class="bg-black p-4 border-2 border-slate-700 mb-4">
-                    <span class="text-[10px] text-pink-500 retro-title-sm block mb-2">שאלה מנחה להצגה לתלמיד:</span>
-                    <p id="teacher-question-text" class="text-sm font-bold text-slate-100 leading-loose">טוען...</p>
-                </div>
-                <div class="bg-slate-900 p-4 border-2 border-slate-700 mb-6">
-                    <span class="text-[10px] text-yellow-500 retro-title-sm block mb-2">הסבר לוגי לתלמיד (רמה גבוהה):</span>
-                    <p id="teacher-tip-text" class="text-xs text-slate-300 font-bold leading-loose">טוען...</p>
-                </div>
-                <div class="flex flex-col gap-3">
-                    <button onclick="confirmTeacherHelpConsumption()" class="w-full py-4 text-white text-sm retro-btn btn-green">
-                        אישור וניצול אסימון
-                    </button>
-                    <button onclick="closeTeacherModal()" class="w-full py-3 text-white text-sm retro-btn btn-gray">
-                        ביטול
-                    </button>
-                </div>
-            </div>
+            <div id="teacher-unlocked-screen" class="hidden"></div>
         </div>
     </div>
 
     <!-- Instructions / Retro Intro Screen -->
-    <div id="instructions-modal" class="fixed inset-0 bg-black z-50 flex items-center justify-center p-4">
-        <div class="retro-window border-cyan-500 max-w-lg w-full p-6 relative overflow-hidden flex flex-col items-center">
+    <div id="instructions-modal" class="fixed inset-0 bg-black z-50 flex items-center justify-center p-2 md:p-4">
+        <div class="retro-window border-cyan-500 max-w-2xl w-full p-4 md:p-6 relative overflow-hidden flex flex-col items-center">
             
-            <!-- Pure CSS Retro Pixel Art Bulb (Yellow glowing arcade style) -->
-            <svg class="mb-4 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]" width="60" height="60" viewBox="0 0 10 11" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-                <rect x="3" y="1" width="4" height="1" fill="#facc15" />
-                <rect x="2" y="2" width="6" height="3" fill="#facc15" />
-                <rect x="1" y="3" width="8" height="3" fill="#facc15" />
-                <rect x="2" y="6" width="6" height="1" fill="#facc15" />
-                <rect x="3" y="7" width="4" height="1" fill="#64748b" />
-                <rect x="4" y="8" width="2" height="1" fill="#94a3b8" />
-                <rect x="4" y="9" width="2" height="1" fill="#475569" />
-                <rect x="4" y="10" width="2" height="1" fill="#000" />
-            </svg>
-
-            <h3 class="text-3xl md:text-4xl text-cyan-400 retro-title text-center mb-2">קצר חשמלי</h3>
-            <p class="text-center retro-title-sm text-pink-500 mb-6 text-sm md:text-lg">הכנה ל-720</p>
+            <div class="intro-bulb-strip" aria-hidden="true">
+                <div class="intro-bulb bulb-on"><svg viewBox="0 0 16 20" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect class="bulb-outline" x="5" y="0" width="6" height="1"/><rect class="bulb-outline" x="5" y="1" width="6" height="1"/><rect class="bulb-outline" x="3" y="2" width="10" height="1"/><rect class="bulb-outline" x="2" y="3" width="12" height="2"/><rect class="bulb-outline" x="1" y="5" width="14" height="4"/><rect class="bulb-outline" x="2" y="9" width="12" height="2"/><rect class="bulb-outline" x="3" y="11" width="10" height="1"/><rect class="bulb-outline" x="4" y="12" width="8" height="2"/><rect class="bulb-outline" x="5" y="14" width="6" height="1"/><rect class="bulb-outline" x="5" y="15" width="6" height="2"/><rect class="bulb-outline" x="6" y="17" width="4" height="2"/><rect class="bulb-glass" x="6" y="1" width="4" height="1"/><rect class="bulb-glass" x="4" y="2" width="8" height="1"/><rect class="bulb-glass" x="3" y="3" width="10" height="2"/><rect class="bulb-glass" x="2" y="5" width="12" height="4"/><rect class="bulb-glass" x="3" y="9" width="10" height="2"/><rect class="bulb-glass" x="4" y="11" width="8" height="1"/><rect class="bulb-glass" x="5" y="12" width="6" height="1"/><rect class="bulb-shade" x="11" y="5" width="2" height="4"/><rect class="bulb-shade" x="9" y="9" width="4" height="1"/><rect class="bulb-shade" x="8" y="10" width="4" height="1"/><rect class="bulb-shade" x="6" y="11" width="6" height="1"/><rect class="bulb-shade" x="5" y="12" width="6" height="1"/><rect class="bulb-filament" x="7" y="5" width="2" height="1"/><rect class="bulb-filament" x="6" y="6" width="1" height="1"/><rect class="bulb-filament" x="9" y="6" width="1" height="1"/><rect class="bulb-filament" x="7" y="6" width="2" height="2"/><rect class="bulb-highlight" x="4" y="3" width="2" height="1"/><rect class="bulb-highlight" x="3" y="4" width="2" height="1"/><rect class="bulb-highlight" x="3" y="5" width="1" height="1"/><rect class="bulb-base" x="5" y="13" width="6" height="1"/><rect class="bulb-base-dark" x="5" y="14" width="6" height="1"/><rect class="bulb-base" x="6" y="15" width="4" height="1"/><rect class="bulb-base-dark" x="6" y="16" width="4" height="1"/><rect class="bulb-tip" x="7" y="17" width="2" height="1"/></svg></div>
+                <div class="intro-bulb bulb-off"><svg viewBox="0 0 16 20" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect class="bulb-outline" x="5" y="0" width="6" height="1"/><rect class="bulb-outline" x="5" y="1" width="6" height="1"/><rect class="bulb-outline" x="3" y="2" width="10" height="1"/><rect class="bulb-outline" x="2" y="3" width="12" height="2"/><rect class="bulb-outline" x="1" y="5" width="14" height="4"/><rect class="bulb-outline" x="2" y="9" width="12" height="2"/><rect class="bulb-outline" x="3" y="11" width="10" height="1"/><rect class="bulb-outline" x="4" y="12" width="8" height="2"/><rect class="bulb-outline" x="5" y="14" width="6" height="1"/><rect class="bulb-outline" x="5" y="15" width="6" height="2"/><rect class="bulb-outline" x="6" y="17" width="4" height="2"/><rect class="bulb-glass" x="6" y="1" width="4" height="1"/><rect class="bulb-glass" x="4" y="2" width="8" height="1"/><rect class="bulb-glass" x="3" y="3" width="10" height="2"/><rect class="bulb-glass" x="2" y="5" width="12" height="4"/><rect class="bulb-glass" x="3" y="9" width="10" height="2"/><rect class="bulb-glass" x="4" y="11" width="8" height="1"/><rect class="bulb-glass" x="5" y="12" width="6" height="1"/><rect class="bulb-shade" x="11" y="5" width="2" height="4"/><rect class="bulb-shade" x="9" y="9" width="4" height="1"/><rect class="bulb-shade" x="8" y="10" width="4" height="1"/><rect class="bulb-shade" x="6" y="11" width="6" height="1"/><rect class="bulb-shade" x="5" y="12" width="6" height="1"/><rect class="bulb-filament" x="7" y="5" width="2" height="1"/><rect class="bulb-filament" x="6" y="6" width="1" height="1"/><rect class="bulb-filament" x="9" y="6" width="1" height="1"/><rect class="bulb-filament" x="7" y="6" width="2" height="2"/><rect class="bulb-highlight" x="4" y="3" width="2" height="1"/><rect class="bulb-highlight" x="3" y="4" width="2" height="1"/><rect class="bulb-highlight" x="3" y="5" width="1" height="1"/><rect class="bulb-base" x="5" y="13" width="6" height="1"/><rect class="bulb-base-dark" x="5" y="14" width="6" height="1"/><rect class="bulb-base" x="6" y="15" width="4" height="1"/><rect class="bulb-base-dark" x="6" y="16" width="4" height="1"/><rect class="bulb-tip" x="7" y="17" width="2" height="1"/></svg></div>
+                <div class="intro-bulb bulb-hint"><svg viewBox="0 0 16 20" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect class="bulb-outline" x="5" y="0" width="6" height="1"/><rect class="bulb-outline" x="5" y="1" width="6" height="1"/><rect class="bulb-outline" x="3" y="2" width="10" height="1"/><rect class="bulb-outline" x="2" y="3" width="12" height="2"/><rect class="bulb-outline" x="1" y="5" width="14" height="4"/><rect class="bulb-outline" x="2" y="9" width="12" height="2"/><rect class="bulb-outline" x="3" y="11" width="10" height="1"/><rect class="bulb-outline" x="4" y="12" width="8" height="2"/><rect class="bulb-outline" x="5" y="14" width="6" height="1"/><rect class="bulb-outline" x="5" y="15" width="6" height="2"/><rect class="bulb-outline" x="6" y="17" width="4" height="2"/><rect class="bulb-glass" x="6" y="1" width="4" height="1"/><rect class="bulb-glass" x="4" y="2" width="8" height="1"/><rect class="bulb-glass" x="3" y="3" width="10" height="2"/><rect class="bulb-glass" x="2" y="5" width="12" height="4"/><rect class="bulb-glass" x="3" y="9" width="10" height="2"/><rect class="bulb-glass" x="4" y="11" width="8" height="1"/><rect class="bulb-glass" x="5" y="12" width="6" height="1"/><rect class="bulb-shade" x="11" y="5" width="2" height="4"/><rect class="bulb-shade" x="9" y="9" width="4" height="1"/><rect class="bulb-shade" x="8" y="10" width="4" height="1"/><rect class="bulb-shade" x="6" y="11" width="6" height="1"/><rect class="bulb-shade" x="5" y="12" width="6" height="1"/><rect class="bulb-filament" x="7" y="5" width="2" height="1"/><rect class="bulb-filament" x="6" y="6" width="1" height="1"/><rect class="bulb-filament" x="9" y="6" width="1" height="1"/><rect class="bulb-filament" x="7" y="6" width="2" height="2"/><rect class="bulb-highlight" x="4" y="3" width="2" height="1"/><rect class="bulb-highlight" x="3" y="4" width="2" height="1"/><rect class="bulb-highlight" x="3" y="5" width="1" height="1"/><rect class="bulb-base" x="5" y="13" width="6" height="1"/><rect class="bulb-base-dark" x="5" y="14" width="6" height="1"/><rect class="bulb-base" x="6" y="15" width="4" height="1"/><rect class="bulb-base-dark" x="6" y="16" width="4" height="1"/><rect class="bulb-tip" x="7" y="17" width="2" height="1"/></svg></div>
+                <div class="intro-bulb bulb-on"><svg viewBox="0 0 16 20" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect class="bulb-outline" x="5" y="0" width="6" height="1"/><rect class="bulb-outline" x="5" y="1" width="6" height="1"/><rect class="bulb-outline" x="3" y="2" width="10" height="1"/><rect class="bulb-outline" x="2" y="3" width="12" height="2"/><rect class="bulb-outline" x="1" y="5" width="14" height="4"/><rect class="bulb-outline" x="2" y="9" width="12" height="2"/><rect class="bulb-outline" x="3" y="11" width="10" height="1"/><rect class="bulb-outline" x="4" y="12" width="8" height="2"/><rect class="bulb-outline" x="5" y="14" width="6" height="1"/><rect class="bulb-outline" x="5" y="15" width="6" height="2"/><rect class="bulb-outline" x="6" y="17" width="4" height="2"/><rect class="bulb-glass" x="6" y="1" width="4" height="1"/><rect class="bulb-glass" x="4" y="2" width="8" height="1"/><rect class="bulb-glass" x="3" y="3" width="10" height="2"/><rect class="bulb-glass" x="2" y="5" width="12" height="4"/><rect class="bulb-glass" x="3" y="9" width="10" height="2"/><rect class="bulb-glass" x="4" y="11" width="8" height="1"/><rect class="bulb-glass" x="5" y="12" width="6" height="1"/><rect class="bulb-shade" x="11" y="5" width="2" height="4"/><rect class="bulb-shade" x="9" y="9" width="4" height="1"/><rect class="bulb-shade" x="8" y="10" width="4" height="1"/><rect class="bulb-shade" x="6" y="11" width="6" height="1"/><rect class="bulb-shade" x="5" y="12" width="6" height="1"/><rect class="bulb-filament" x="7" y="5" width="2" height="1"/><rect class="bulb-filament" x="6" y="6" width="1" height="1"/><rect class="bulb-filament" x="9" y="6" width="1" height="1"/><rect class="bulb-filament" x="7" y="6" width="2" height="2"/><rect class="bulb-highlight" x="4" y="3" width="2" height="1"/><rect class="bulb-highlight" x="3" y="4" width="2" height="1"/><rect class="bulb-highlight" x="3" y="5" width="1" height="1"/><rect class="bulb-base" x="5" y="13" width="6" height="1"/><rect class="bulb-base-dark" x="5" y="14" width="6" height="1"/><rect class="bulb-base" x="6" y="15" width="4" height="1"/><rect class="bulb-base-dark" x="6" y="16" width="4" height="1"/><rect class="bulb-tip" x="7" y="17" width="2" height="1"/></svg></div>
+                <div class="intro-bulb bulb-off"><svg viewBox="0 0 16 20" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect class="bulb-outline" x="5" y="0" width="6" height="1"/><rect class="bulb-outline" x="5" y="1" width="6" height="1"/><rect class="bulb-outline" x="3" y="2" width="10" height="1"/><rect class="bulb-outline" x="2" y="3" width="12" height="2"/><rect class="bulb-outline" x="1" y="5" width="14" height="4"/><rect class="bulb-outline" x="2" y="9" width="12" height="2"/><rect class="bulb-outline" x="3" y="11" width="10" height="1"/><rect class="bulb-outline" x="4" y="12" width="8" height="2"/><rect class="bulb-outline" x="5" y="14" width="6" height="1"/><rect class="bulb-outline" x="5" y="15" width="6" height="2"/><rect class="bulb-outline" x="6" y="17" width="4" height="2"/><rect class="bulb-glass" x="6" y="1" width="4" height="1"/><rect class="bulb-glass" x="4" y="2" width="8" height="1"/><rect class="bulb-glass" x="3" y="3" width="10" height="2"/><rect class="bulb-glass" x="2" y="5" width="12" height="4"/><rect class="bulb-glass" x="3" y="9" width="10" height="2"/><rect class="bulb-glass" x="4" y="11" width="8" height="1"/><rect class="bulb-glass" x="5" y="12" width="6" height="1"/><rect class="bulb-shade" x="11" y="5" width="2" height="4"/><rect class="bulb-shade" x="9" y="9" width="4" height="1"/><rect class="bulb-shade" x="8" y="10" width="4" height="1"/><rect class="bulb-shade" x="6" y="11" width="6" height="1"/><rect class="bulb-shade" x="5" y="12" width="6" height="1"/><rect class="bulb-filament" x="7" y="5" width="2" height="1"/><rect class="bulb-filament" x="6" y="6" width="1" height="1"/><rect class="bulb-filament" x="9" y="6" width="1" height="1"/><rect class="bulb-filament" x="7" y="6" width="2" height="2"/><rect class="bulb-highlight" x="4" y="3" width="2" height="1"/><rect class="bulb-highlight" x="3" y="4" width="2" height="1"/><rect class="bulb-highlight" x="3" y="5" width="1" height="1"/><rect class="bulb-base" x="5" y="13" width="6" height="1"/><rect class="bulb-base-dark" x="5" y="14" width="6" height="1"/><rect class="bulb-base" x="6" y="15" width="4" height="1"/><rect class="bulb-base-dark" x="6" y="16" width="4" height="1"/><rect class="bulb-tip" x="7" y="17" width="2" height="1"/></svg></div>
+            </div>
+            <h3 class="text-4xl md:text-5xl text-cyan-400 retro-title text-center mb-1">קצר חשמלי</h3>
+            <p class="text-center retro-title-sm text-pink-500 mb-4 text-sm md:text-lg">הכנה ל-720</p>
             
-            <div class="w-full text-xs sm:text-sm text-slate-200 leading-loose mb-8 border-y-4 border-slate-700 py-4 max-h-[300px] overflow-y-auto pr-2 bg-slate-900 px-4 font-bold">
-                <p class="mb-3">
-                    <span class="text-yellow-400 retro-title-sm text-[10px] block mb-1">>> משימה:</span>
-                    הפוך את כל פנסי המערכת ל<span class="text-green-400">ירוקים</span>.
+            <div class="w-full text-slate-200 mb-5 border-y-4 border-slate-700 py-2 bg-slate-900 px-4 instructions-copy">
+                <p class="mb-0">
+                    <span class="instruction-label block mb-1">>> משימה:</span>
+                    הדלק את כל הנורות במערכת — שכולן יאירו ב<span class="text-yellow-400">צהוב</span>.
                 </p>
-                <p class="mb-3">
-                    <span class="text-yellow-400 retro-title-sm text-[10px] block mb-1">>> אינטראקציה:</span>
+                <p class="mb-0">
+                    <span class="instruction-label block mb-1">>> אינטראקציה:</span>
                     לחיצה על פנס משנה אותו ואת השכנים שלו (מעלה, מטה, ימין, שמאל).
                 </p>
-                <p class="mb-3">
-                    <span class="text-red-400 retro-title-sm text-[10px] block mb-1">>> ניהול טיפים ועזרה:</span>
+                <p class="mb-0">
+                    <span class="instruction-label instruction-label-alert block mb-1">>> טיפים:</span>
                     פתיחת טיפ מורידה מהניקוד הכללי שלך מיידית! 
-                    מתחילים עם 0 טיפים. בסיום כל שלב תקבל לבחור טיפ +1 במתנה.
+                    מתחילים עם 0 טיפים. בסיום כל שלב תקבל לבחור טיפ +1 במתנה. פנייה למורה דורשת שתי רכישות ומהבהבת בכל פעם את הנורה הבאה.
                 </p>
             </div>
             
@@ -460,6 +533,9 @@
         </div>
     </div>
 
+    <footer class="w-full max-w-5xl mx-auto mt-6 mb-2 text-center text-[10px] md:text-xs text-slate-500 font-bold">
+        © כל הזכויות שמורות לשלומי נויפלד
+    </footer>
     <script>
         // Web Audio Synthesizer (Retro Sounds Generator)
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -520,27 +596,32 @@
             }
         }
 
-        // 20 levels carefully designed
+        // 20 levels — ordered so board size never decreases (3x3 -> 4x4 -> 5x5 -> 6x6).
+        // Difficulty is hand-tuned within each tier with deliberate ramps and breather stages.
         const levels = [
+            // --- 3x3 tier ---
             { id: 1, size: 3, name: "הניצוץ הראשון", initialFlips: [[1, 1]], limit: null },
             { id: 2, size: 3, name: "תנועת מלקחיים", initialFlips: [[0, 0], [2, 2]], limit: null },
-            { id: 3, size: 3, name: "הקו הישר", initialFlips: [[0, 1], [1, 1], [2, 1]], limit: null },
+            { id: 3, size: 3, name: "שתי פינות", initialFlips: [[0, 0], [2, 0]], limit: null },
+            // --- 4x4 tier ---
             { id: 4, size: 4, name: "ריבוע כפול", initialFlips: [[1, 1], [2, 2]], limit: null },
-            { id: 5, size: 4, name: "ארבע פינות", initialFlips: [[0, 0], [0, 3], [3, 0], [3, 3]], limit: null },
-            { id: 6, size: 4, name: "מבצר הניאון", initialFlips: [[1, 1], [1, 2], [2, 1], [2, 2]], limit: 10 },
-            { id: 7, size: 4, name: "מתח משתנה", initialFlips: [[0, 1], [1, 2], [2, 3], [3, 0]], limit: 12 },
-            { id: 8, size: 5, name: "ברוכים הבאים ל-5X5", initialFlips: [[2, 2]], limit: 14 },
-            { id: 9, size: 5, name: "הצלב הגדול", initialFlips: [[1, 1], [1, 3], [3, 1], [3, 3]], limit: 15 },
-            { id: 10, size: 5, name: "לוח שחמט", initialFlips: [[0, 2], [2, 0], [2, 4], [4, 2], [2, 2]], limit: 16 },
-            { id: 11, size: 5, name: "הסערה השקטה", initialFlips: [[0, 0], [0, 4], [4, 0], [4, 4], [1, 2], [3, 2]], limit: 18 },
-            { id: 12, size: 5, name: "מילניום סופי", initialFlips: [[0, 1], [1, 3], [2, 0], [3, 4], [4, 2], [1, 1], [3, 3]], limit: 20 },
-            { id: 13, size: 6, name: "מטריצת ענק 6X6", initialFlips: [[1, 1], [2, 4], [4, 2], [3, 3]], limit: 22 },
-            { id: 14, size: 6, name: "עמודי התווך", initialFlips: [[0, 0], [5, 5], [0, 5], [5, 0], [2, 2], [3, 3]], limit: 24 },
-            { id: 15, size: 6, name: "מעבה המערכת", initialFlips: [[1, 2], [2, 3], [3, 4], [4, 1], [0, 0], [5, 5], [2, 2]], limit: 25 },
-            { id: 16, size: 4, name: "זרימה פנימית", initialFlips: [[0, 0], [1, 1], [2, 2], [3, 3], [0, 3], [3, 0]], limit: 14 },
-            { id: 17, size: 5, name: "מבוך תדרים", initialFlips: [[0, 1], [1, 1], [2, 1], [3, 1], [4, 3], [1, 4]], limit: 16 },
-            { id: 18, size: 5, name: "לוח תהודה", initialFlips: [[1, 0], [0, 1], [4, 3], [3, 4], [2, 2]], limit: 18 },
-            { id: 19, size: 6, name: "שרשרת הולכה", initialFlips: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]], limit: 24 },
+            { id: 5, size: 4, name: "מתח משתנה", initialFlips: [[0, 1], [1, 2], [2, 3], [3, 0]], limit: null },
+            { id: 6, size: 4, name: "ארבע פינות", initialFlips: [[0, 0], [0, 3], [3, 0], [3, 3]], limit: 12 },
+            { id: 7, size: 4, name: "מבצר הניאון", initialFlips: [[1, 1], [1, 2], [2, 1], [2, 2]], limit: 12 },
+            { id: 8, size: 4, name: "זרימה פנימית", initialFlips: [[0, 0], [1, 1], [2, 2], [3, 3], [0, 3], [3, 0]], limit: 14 },
+            // --- 5x5 tier ---
+            { id: 9, size: 5, name: "שער ה-5X5", initialFlips: [[1, 1], [2, 3], [3, 1]], limit: 14 },
+            { id: 10, size: 5, name: "טבעת עומס", initialFlips: [[0, 0], [0, 4], [1, 2], [2, 1], [2, 3], [3, 2], [4, 0], [4, 4]], limit: 18 },
+            { id: 11, size: 5, name: "לוח שחמט", initialFlips: [[0, 2], [2, 0], [2, 4], [4, 2], [2, 2]], limit: 16 },
+            { id: 12, size: 5, name: "לוח תהודה", initialFlips: [[1, 0], [0, 1], [4, 3], [3, 4], [2, 2]], limit: 16 },
+            { id: 13, size: 5, name: "מבוך תדרים", initialFlips: [[0, 1], [1, 1], [2, 1], [3, 1], [4, 3], [1, 4]], limit: 18 },
+            { id: 14, size: 5, name: "הסערה השקטה", initialFlips: [[0, 0], [0, 4], [4, 0], [4, 4], [1, 2], [3, 2]], limit: 18 },
+            { id: 15, size: 5, name: "מילניום סופי", initialFlips: [[0, 1], [1, 3], [2, 0], [3, 4], [4, 2], [1, 1], [3, 3]], limit: 20 },
+            // --- 6x6 tier ---
+            { id: 16, size: 6, name: "מטריצת ענק 6X6", initialFlips: [[1, 1], [2, 4], [4, 2], [3, 3]], limit: 22 },
+            { id: 17, size: 6, name: "שרשרת הולכה", initialFlips: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]], limit: 22 },
+            { id: 18, size: 6, name: "עמודי התווך", initialFlips: [[0, 0], [5, 5], [0, 5], [5, 0], [2, 2], [3, 3]], limit: 24 },
+            { id: 19, size: 6, name: "מעבה המערכת", initialFlips: [[1, 2], [2, 3], [3, 4], [4, 1], [0, 0], [5, 5], [2, 2]], limit: 25 },
             { id: 20, size: 6, name: "קצר אחרון", initialFlips: [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [0, 5], [5, 0], [2, 3], [3, 2]], limit: 26 }
         ];
 
@@ -550,7 +631,60 @@
         let moves = 0;
         let board = [];
         let peerSuggestion = null;
+        let teacherSolutionSteps = [];
+        let pendingTeacherSolutionSteps = [];
         let hasAcknowledgedCurrentWarning = false;
+        let lastSelfTipIndex = -1;
+        const TEACHER_HELP_COST = 1000;
+        const TEACHER_HELP_TOKEN_COST = 2;
+        const TEACHER_CODE_STORAGE_KEY = 'short-electric-teacher-code-index-v1';
+        const TEACHER_ACCESS_CODES = [
+            'K7M2', 'D4Q9', 'T8L3', 'R5X1', 'P9C6',
+            'H2Z8', 'N6V4', 'B3Y7', 'F8J5', 'W1S9',
+            'C7R2', 'L4P8', 'Z9D3', 'Q2H6', 'V5N1',
+            'M8B4', 'Y3T7', 'J6W2', 'X1F9', 'S4K5'
+        ];
+        let teacherCodeIndex = loadTeacherCodeIndex();
+        const selfHelpTips = [
+            "💡 הסדר לא משנה.\n\nאם ברור לך שתא מסוים צריך להילחץ, אפשר לעשות זאת עכשיו או אחר כך. לחיצה כפולה על אותו תא מבטלת את עצמה, לכן עדיף ללחוץ על כל תא לכל היותר פעם אחת.",
+            "💡 דחפו את הבעיה למטה.\n\nאם בשורה העליונה נשארת נורה כבויה, נסו ללחוץ על התא שמתחתיה. כך מסדרים שורה אחת ואז עוברים לשורה הבאה.",
+            "💡 הסתכלו על צורת הפלוס.\n\nכל לחיצה משנה חמישה תאים לכל היותר: התא עצמו, למעלה, למטה, ימין ושמאל. לפני הלחיצה ספרו מי מהם כבוי ומי דולק.",
+            "💡 אל תרדפו אחרי כל נורה בנפרד.\n\nבחרו אזור קטן, תקנו אותו, ואז עברו הלאה. אם לחיצה מקלקלת אזור שכבר סידרתם, נסו לתקן דרך השורה שמתחת.",
+            "💡 בקצוות יש פחות שכנים.\n\nבלוחות גדולים כדאי להתחיל מהפינות ומהקצוות, כי קל יותר לחזות מה כל לחיצה תשנה שם."
+        ];
+
+        function loadTeacherCodeIndex() {
+            try {
+                const savedIndex = Number(window.localStorage?.getItem(TEACHER_CODE_STORAGE_KEY));
+                if (Number.isInteger(savedIndex) && savedIndex >= 0 && savedIndex < TEACHER_ACCESS_CODES.length) {
+                    return savedIndex;
+                }
+            } catch (e) {
+                // Ignore storage errors; code rotation still works for the current session.
+            }
+            return 0;
+        }
+
+        function saveTeacherCodeIndex() {
+            try {
+                window.localStorage?.setItem(TEACHER_CODE_STORAGE_KEY, String(teacherCodeIndex));
+            } catch (e) {
+                // Ignore storage errors; the in-memory index is still advanced.
+            }
+        }
+
+        function getCurrentTeacherCode() {
+            return TEACHER_ACCESS_CODES[teacherCodeIndex];
+        }
+
+        function advanceTeacherCode() {
+            teacherCodeIndex = (teacherCodeIndex + 1) % TEACHER_ACCESS_CODES.length;
+            saveTeacherCodeIndex();
+        }
+
+        function normalizeTeacherCode(value) {
+            return String(value).toUpperCase().replace(/[^A-Z0-9]/g, '');
+        }
 
         // Help Resources Stock (Starts at 0!)
         let helpStock = {
@@ -570,6 +704,8 @@
             const level = levels[currentIdx];
             moves = 0;
             peerSuggestion = null;
+            teacherSolutionSteps = [];
+            pendingTeacherSolutionSteps = [];
 
             // Header Updates
             document.getElementById('stage-display').innerText = `${String(level.id).padStart(2, '0')}/${String(levels.length).padStart(2, '0')}`;
@@ -615,6 +751,53 @@
             updateUI();
         }
 
+        // Pixel-art light-bulb SVG markup (fills are driven by .bulb-on / .bulb-off CSS)
+        function bulbSVG() {
+            return `<svg viewBox="0 0 16 20" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+                <!-- dark outline (behind) -->
+                <rect class="bulb-outline" x="5" y="0" width="6" height="1"/>
+                <rect class="bulb-outline" x="5" y="1" width="6" height="1"/>
+                <rect class="bulb-outline" x="3" y="2" width="10" height="1"/>
+                <rect class="bulb-outline" x="2" y="3" width="12" height="2"/>
+                <rect class="bulb-outline" x="1" y="5" width="14" height="4"/>
+                <rect class="bulb-outline" x="2" y="9" width="12" height="2"/>
+                <rect class="bulb-outline" x="3" y="11" width="10" height="1"/>
+                <rect class="bulb-outline" x="4" y="12" width="8" height="2"/>
+                <rect class="bulb-outline" x="5" y="14" width="6" height="1"/>
+                <rect class="bulb-outline" x="5" y="15" width="6" height="2"/>
+                <rect class="bulb-outline" x="6" y="17" width="4" height="2"/>
+                <!-- glass envelope -->
+                <rect class="bulb-glass" x="6" y="1" width="4" height="1"/>
+                <rect class="bulb-glass" x="4" y="2" width="8" height="1"/>
+                <rect class="bulb-glass" x="3" y="3" width="10" height="2"/>
+                <rect class="bulb-glass" x="2" y="5" width="12" height="4"/>
+                <rect class="bulb-glass" x="3" y="9" width="10" height="2"/>
+                <rect class="bulb-glass" x="4" y="11" width="8" height="1"/>
+                <rect class="bulb-glass" x="5" y="12" width="6" height="1"/>
+                <!-- volume shading (lower-right of glass) -->
+                <rect class="bulb-shade" x="11" y="5" width="2" height="4"/>
+                <rect class="bulb-shade" x="9"  y="9" width="4" height="1"/>
+                <rect class="bulb-shade" x="8"  y="10" width="4" height="1"/>
+                <rect class="bulb-shade" x="6"  y="11" width="6" height="1"/>
+                <rect class="bulb-shade" x="5"  y="12" width="6" height="1"/>
+                <!-- filament core -->
+                <rect class="bulb-filament" x="7" y="5" width="2" height="1"/>
+                <rect class="bulb-filament" x="6" y="6" width="1" height="1"/>
+                <rect class="bulb-filament" x="9" y="6" width="1" height="1"/>
+                <rect class="bulb-filament" x="7" y="6" width="2" height="2"/>
+                <!-- top-left highlight glint -->
+                <rect class="bulb-highlight" x="4" y="3" width="2" height="1"/>
+                <rect class="bulb-highlight" x="3" y="4" width="2" height="1"/>
+                <rect class="bulb-highlight" x="3" y="5" width="1" height="1"/>
+                <!-- metallic screw base -->
+                <rect class="bulb-base"      x="5" y="13" width="6" height="1"/>
+                <rect class="bulb-base-dark" x="5" y="14" width="6" height="1"/>
+                <rect class="bulb-base"      x="6" y="15" width="4" height="1"/>
+                <rect class="bulb-base-dark" x="6" y="16" width="4" height="1"/>
+                <rect class="bulb-tip"       x="7" y="17" width="2" height="1"/>
+            </svg>`;
+        }
+
         // Render HTML Board elements
         function renderGrid(size) {
             const gridContainer = document.getElementById('grid-container');
@@ -625,11 +808,19 @@
                 for (let c = 0; c < size; c++) {
                     const bulbBtn = document.createElement('button');
                     bulbBtn.id = `bulb-${r}-${c}`;
-                    bulbBtn.className = `pixel-bulb aspect-square rounded-lg cursor-pointer ${board[r][c] ? 'pixel-bulb-on' : 'pixel-bulb-off'}`;
-                    
-                    // Apply Peer suggestion or Teacher recommendation animation if active
-                    if (peerSuggestion && peerSuggestion.r === r && peerSuggestion.c === c) {
-                        bulbBtn.classList.add('pixel-flash-active');
+                    bulbBtn.className = `bulb-cell aspect-square ${board[r][c] ? 'bulb-on' : 'bulb-off'}`;
+                    bulbBtn.innerHTML = bulbSVG();
+
+                    // Desync the idle flicker so bulbs don't all pulse in unison
+                    const svg = bulbBtn.querySelector('svg');
+                    svg.style.animationDelay = `${((r * 7 + c * 3) % 10) * 0.5}s`;
+
+                    // Apply peer suggestion or the current teacher solution step.
+                    const currentTeacherStep = teacherSolutionSteps[0];
+                    const shouldHighlightPeer = peerSuggestion && peerSuggestion.r === r && peerSuggestion.c === c;
+                    const shouldHighlightTeacher = currentTeacherStep && currentTeacherStep.r === r && currentTeacherStep.c === c;
+                    if (shouldHighlightPeer || shouldHighlightTeacher) {
+                        bulbBtn.classList.add('bulb-hint');
                     }
 
                     bulbBtn.onclick = () => onBulbClick(r, c);
@@ -669,9 +860,31 @@
                 peerSuggestion = null;
             }
 
+            if (teacherSolutionSteps.length > 0) {
+                const currentTeacherStep = teacherSolutionSteps[0];
+                if (currentTeacherStep.r === r && currentTeacherStep.c === c) {
+                    teacherSolutionSteps.shift();
+                } else {
+                    teacherSolutionSteps = [];
+                }
+            }
+
             document.getElementById('moves-display').innerText = `${String(moves).padStart(2, '0')}/${level.limit ? String(level.limit).padStart(2, '0') : '--'}`;
             updateUI();
             renderGrid(level.size);
+
+            // Spark flash on every bulb this click just toggled (the plus shape)
+            const dirs = [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]];
+            dirs.forEach(([dr, dc]) => {
+                const nr = r + dr, nc = c + dc;
+                if (nr >= 0 && nr < level.size && nc >= 0 && nc < level.size) {
+                    const el = document.getElementById(`bulb-${nr}-${nc}`);
+                    if (el) {
+                        el.classList.add('bulb-spark');
+                        setTimeout(() => el.classList.remove('bulb-spark'), 320);
+                    }
+                }
+            });
 
             checkVictory();
         }
@@ -717,12 +930,12 @@
             // Tokens indicator text updates
             document.getElementById('token-count-self').innerText = helpStock.self;
             document.getElementById('token-count-peer').innerText = helpStock.peer;
-            document.getElementById('token-count-teacher').innerText = helpStock.teacher;
+            document.getElementById('token-count-teacher').innerText = helpStock.teacher + '/' + TEACHER_HELP_TOKEN_COST;
 
             // Enable or disable trigger buttons based on stock
             document.getElementById('btn-tip-self').disabled = (helpStock.self <= 0);
             document.getElementById('btn-tip-peer').disabled = (helpStock.peer <= 0);
-            document.getElementById('btn-tip-teacher').disabled = (helpStock.teacher <= 0);
+            document.getElementById('btn-tip-teacher').disabled = (helpStock.teacher < TEACHER_HELP_TOKEN_COST);
         }
 
         // Reset stage action
@@ -849,19 +1062,11 @@
 
         /* Tip System Actions - Realtime & State-Aware */
 
-        // Tip 1: חשיבה לעומק (Dynamic State Observation)
+        // Tip 1: עזרה מהבוט (rotating strategic principles)
         function triggerSelfHelp() {
             if (helpStock.self <= 0) return;
 
-            // Get optimal clicks for current state
-            const optimalMoves = solveCurrentBoard();
-            
-            let tipText = "";
-            if (optimalMoves.length === 0) {
-                tipText = "מערכות הבקרה מעידות שהלוח כבר פתור לחלוטין! אם הלוח לא השתנה, בצע מהלך קטן כדי לאתחל את האיזון.";
-            } else {
-                tipText = `המערכת מזהה כי במצב הנוכחי אתה נמצא במרחק של ${optimalMoves.length} לחיצות מדויקות בלבד מפתרון מלא!\n\nהמלצה: אל תילחץ במקומות אקראיים. נסה לאתר את הנורה המקשרת בין הריכוזים האדומים בשורות העליונות ביותר ולהוריד את הזרם כלפי מטה.`;
-            }
+            const tipText = getSelfHelpTip();
 
             // Deduct Points & Stock
             score = Math.max(0, score - 150);
@@ -871,6 +1076,15 @@
             document.getElementById('text-tip-modal').style.display = 'flex';
 
             updateUI();
+        }
+
+        function getSelfHelpTip() {
+            let nextTipIndex = Math.floor(Math.random() * selfHelpTips.length);
+            if (selfHelpTips.length > 1 && nextTipIndex === lastSelfTipIndex) {
+                nextTipIndex = (nextTipIndex + 1) % selfHelpTips.length;
+            }
+            lastSelfTipIndex = nextTipIndex;
+            return selfHelpTips[nextTipIndex];
         }
 
         function closeTextTipModal() {
@@ -902,43 +1116,12 @@
             updateUI();
         }
 
-        // Tip 3: פנייה למורה (High Level: עזרה + הסבר)
+        // Tip 3: פנייה למורה (walks through the solution one blinking bulb at a time)
         function triggerTeacherHelp() {
-            if (helpStock.teacher <= 0) return;
+            if (helpStock.teacher < TEACHER_HELP_TOKEN_COST) return;
 
-            const optimalMoves = solveCurrentBoard();
-            let selectedMove = null;
-            
-            if (optimalMoves.length > 0) {
-                selectedMove = optimalMoves[Math.floor(Math.random() * optimalMoves.length)];
-            } else {
-                // Fallback
-                const level = levels[currentIdx];
-                const randIndex = Math.floor(Math.random() * level.initialFlips.length);
-                const targetCell = level.initialFlips[randIndex];
-                selectedMove = { r: targetCell[0], c: targetCell[1] };
-            }
+            pendingTeacherSolutionSteps = solveCurrentBoard();
 
-            // Apply the recommendation highlight (just like Peer Help)
-            peerSuggestion = { r: selectedMove.r, c: selectedMove.c };
-
-            // Set coordinates in Hebrew
-            const HebrewRows = ["ראשונה", "שנייה", "שלישית", "רביעית", "חמישית", "שישית"];
-            const rowText = HebrewRows[selectedMove.r] || `${selectedMove.r + 1}`;
-            const colText = HebrewRows[selectedMove.c] || `${selectedMove.c + 1}`;
-
-            document.getElementById('teacher-target-coords').innerText = `שורה ${rowText} (מלמעלה), עמודה ${colText} (מימין)`;
-
-            // Define dynamic rich guidance question & explanation based on board status
-            const totalRedCount = board.flat().filter(cell => !cell).length;
-            
-            document.getElementById('teacher-question-text').innerText = 
-                `שים לב כי הלוח מכיל כרגע ${totalRedCount} נורות אדומות מפוזרות. אם נלחץ על התא המהבהב בשורה ${selectedMove.r + 1} ובעמודה ${selectedMove.c + 1}, כיצד זה ישנה את מאזן הכוחות של הנורות השכנות? האם זה יקרב אותנו לקראת ניקוי השורות העליונות?`;
-
-            document.getElementById('teacher-tip-text').innerText = 
-                `מניתוח המערכת עולה כי התא המומלץ מהווה צומת השפעה קריטי. לחיצה עליו תפעיל זרם מנוגד המבטל את השבירה במטריצה ותאפס ${1 + getNeighborOffCount(selectedMove.r, selectedMove.c)} נורות המקיפות אותו באזור זה. הלחיצה הזו תתחיל שרשרת איזון שתסייע להביא את הזרמים להרמוניה ירוקה.`;
-
-            // Lock screen setup
             document.getElementById('teacher-lock-screen').style.display = 'block';
             document.getElementById('teacher-unlocked-screen').className = 'hidden';
             document.getElementById('teacher-pin-err').className = 'text-xs text-red-500 hidden font-bold';
@@ -947,52 +1130,32 @@
             document.getElementById('teacher-help-modal').style.display = 'flex';
         }
 
-        // Helper to count how many neighboring cells are currently OFF (red)
-        function getNeighborOffCount(r, c) {
-            let count = 0;
-            const size = levels[currentIdx].size;
-            const directions = [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]];
-            directions.forEach(([dr, dc]) => {
-                const nr = r + dr;
-                const nc = c + dc;
-                if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
-                    if (!board[nr][nc]) {
-                        count++;
-                    }
-                }
-            });
-            return count;
-        }
-
         function unlockTeacherView() {
-            const input = document.getElementById('teacher-pin-input').value;
-            if (input === "1234") {
-                document.getElementById('teacher-lock-screen').style.display = 'none';
-                document.getElementById('teacher-unlocked-screen').className = 'block';
-                
-                // Immediately render grid to display the dynamic flashing target on the game board
+            const input = normalizeTeacherCode(document.getElementById('teacher-pin-input').value);
+            if (input === getCurrentTeacherCode()) {
+                if (helpStock.teacher < TEACHER_HELP_TOKEN_COST) {
+                    updateUI();
+                    closeTeacherModal();
+                    return;
+                }
+
+                score = Math.max(0, score - TEACHER_HELP_COST);
+                helpStock.teacher -= TEACHER_HELP_TOKEN_COST;
+                advanceTeacherCode();
+                peerSuggestion = null;
+                teacherSolutionSteps = pendingTeacherSolutionSteps.slice();
+                pendingTeacherSolutionSteps = [];
+                updateUI();
+
+                closeTeacherModal();
                 renderGrid(levels[currentIdx].size);
             } else {
                 document.getElementById('teacher-pin-err').className = 'text-xs text-red-500 block font-bold';
             }
         }
 
-        function confirmTeacherHelpConsumption() {
-            // Deduct Points and stock
-            score = Math.max(0, score - 500);
-            helpStock.teacher--;
-
-            updateUI();
-            closeTeacherModal();
-        }
-
         function closeTeacherModal() {
             document.getElementById('teacher-help-modal').style.display = 'none';
-            // If the user canceled and chose not to spend the token, clear the suggestion
-            if (document.getElementById('teacher-unlocked-screen').classList.contains('hidden')) {
-                peerSuggestion = null;
-                renderGrid(levels[currentIdx].size);
-            }
         }
 
         /* General Modal Controls */

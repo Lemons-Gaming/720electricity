@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דף הנחיה למורים - קצר חשמלי</title>
+    <style>
+        :root {
+            --ink: #111827;
+            --muted: #4b5563;
+            --panel: #ffffff;
+            --line: #d1d5db;
+            --pink: #db2777;
+            --cyan: #0891b2;
+            --yellow: #ca8a04;
+            --blue: #2563eb;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #eef2f7;
+            color: var(--ink);
+            font-family: Arial, "Noto Sans Hebrew", "Rubik", sans-serif;
+            line-height: 1.6;
+        }
+        main {
+            width: min(940px, calc(100% - 32px));
+            margin: 32px auto;
+            background: var(--panel);
+            border: 4px solid var(--ink);
+            box-shadow: 10px 10px 0 #cbd5e1;
+            padding: 32px;
+        }
+        header {
+            border-bottom: 4px solid var(--ink);
+            padding-bottom: 18px;
+            margin-bottom: 24px;
+        }
+        h1 {
+            margin: 0 0 8px;
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            font-weight: 900;
+            color: var(--pink);
+            letter-spacing: 0;
+        }
+        .subtitle {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--muted);
+        }
+        section {
+            margin: 22px 0;
+            padding: 18px;
+            border: 3px solid var(--line);
+            background: #f9fafb;
+        }
+        h2 {
+            margin: 0 0 10px;
+            font-size: 1.35rem;
+            font-weight: 900;
+        }
+        .tag {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 3px 8px;
+            background: var(--ink);
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 900;
+        }
+        ul, ol { margin: 8px 0 0; padding-right: 22px; }
+        li { margin: 8px 0; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .card {
+            border: 3px solid var(--ink);
+            padding: 14px;
+            background: #fff;
+        }
+        .card strong { display: block; font-size: 1.05rem; margin-bottom: 6px; }
+        .bot { border-color: var(--blue); }
+        .friend { border-color: var(--yellow); }
+        .teacher { border-color: var(--pink); }
+        .note {
+            border-color: var(--cyan);
+            background: #ecfeff;
+            font-weight: 700;
+        }
+        .codes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+            direction: ltr;
+            text-align: center;
+            font-family: "Courier New", monospace;
+            font-weight: 700;
+        }
+        .codes-table th,
+        .codes-table td {
+            border: 2px solid var(--ink);
+            padding: 8px 10px;
+            background: #fff;
+        }
+        .codes-table th {
+            background: #111827;
+            color: #fff;
+        }
+        .codes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .copyright {
+            border-top: 3px solid var(--ink);
+            margin-top: 24px;
+            padding-top: 14px;
+            color: var(--muted);
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-align: center;
+        }
+        .footer-note {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-top: 24px;
+        }
+        @media print {
+            body { background: #fff; }
+            main { width: 100%; margin: 0; box-shadow: none; border: 0; }
+            section { break-inside: avoid; }
+        }
+        @media (max-width: 760px) {
+            main { padding: 20px; }
+            .grid, .codes-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header>
+            <h1>קצר חשמלי</h1>
+            <p class="subtitle">דף הנחיה למורים - איך להשתמש במשחק בכיתה</p>
+        </header>
+
+        <section class="note">
+            <h2><span class="tag">רעיון מרכזי</span> התמודדות עצמאית לפני עזרה</h2>
+            <p>
+                מטרת המשחק היא לעזור לתלמידים להישאר בתוך אתגר, לבדוק מהלך, לטעות, לתקן ולפתח אסטרטגיה.
+                העזרה אינה מיועדת להחליף חשיבה, אלא לבנות מדרגות תמיכה: קודם רמז כללי, אחר כך כיוון, ורק בסוף התערבות מורה.
+            </p>
+        </section>
+
+        <section>
+            <h2>תהליך מומלץ בכיתה</h2>
+            <ol>
+                <li>פותחים את המשחק ומסבירים שהיעד הוא להדליק את כל הנורות.</li>
+                <li>נותנים לתלמידים לעבוד לבד כמה דקות לפני כל עזרה.</li>
+                <li>כשנוצר קושי, מבקשים מהתלמיד להסביר מה הוא כבר ניסה ומה הוא חושב שיקרה בלחיצה הבאה.</li>
+                <li>מעודדים שימוש מדורג בעזרה: עזרה מהבוט, עזרה מחבר, ורק אם צריך - פנייה למורה.</li>
+                <li>אחרי פתרון שלב, שואלים: איזה דפוס עזר לך? מה תנסה קודם בשלב הבא?</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>סוגי העזרה במשחק</h2>
+            <div class="grid">
+                <div class="card bot">
+                    <strong>עזרה מהבוט</strong>
+                    רמז אסטרטגי כללי. מתאים כשהתלמיד תקוע אבל עדיין יכול להמשיך לחשוב לבד.
+                </div>
+                <div class="card friend">
+                    <strong>עזרה מחבר</strong>
+                    מסמנת מהלך אפשרי אחד. מתאים אחרי שהתלמיד כבר ניסה להסביר את החשיבה שלו.
+                </div>
+                <div class="card teacher">
+                    <strong>פנייה למורה</strong>
+                    דורשת שתי רכישות וקוד מורה. לאחר הקוד המשחק מהבהב בכל פעם את הנורה הבאה בפתרון.
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>קודי מורה</h2>
+            <p>
+                לתלמיד מופיע XXXX. יש לתת בכל פעם את הקוד הבא ברשימה.
+                כל שימוש מוצלח מעביר את המשחק לקוד הבא. אחרי קוד 20 חוזרים לקוד 1.
+            </p>
+            <p>
+                חשוב: הרצף נשמר בדפדפן/מכשיר של התלמיד. אם תלמיד עובד ממכשיר אחר או מדפדפן אחר, ייתכן שהרצף שם נמצא במקום אחר.
+            </p>
+            <table class="codes-table" aria-label="Teacher codes">
+                <thead><tr><th>#</th><th>Code</th></tr></thead>
+                <tbody>
+                <tr><td>1</td><td>K7M2</td></tr>
+                <tr><td>2</td><td>D4Q9</td></tr>
+                <tr><td>3</td><td>T8L3</td></tr>
+                <tr><td>4</td><td>R5X1</td></tr>
+                <tr><td>5</td><td>P9C6</td></tr>
+                <tr><td>6</td><td>H2Z8</td></tr>
+                <tr><td>7</td><td>N6V4</td></tr>
+                <tr><td>8</td><td>B3Y7</td></tr>
+                <tr><td>9</td><td>F8J5</td></tr>
+                <tr><td>10</td><td>W1S9</td></tr>
+                <tr><td>11</td><td>C7R2</td></tr>
+                <tr><td>12</td><td>L4P8</td></tr>
+                <tr><td>13</td><td>Z9D3</td></tr>
+                <tr><td>14</td><td>Q2H6</td></tr>
+                <tr><td>15</td><td>V5N1</td></tr>
+                <tr><td>16</td><td>M8B4</td></tr>
+                <tr><td>17</td><td>Y3T7</td></tr>
+                <tr><td>18</td><td>J6W2</td></tr>
+                <tr><td>19</td><td>X1F9</td></tr>
+                <tr><td>20</td><td>S4K5</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>שאלות שכדאי לשאול במקום לפתור מיד</h2>
+            <ul>
+                <li>איזו נורה אתה מנסה לתקן עכשיו?</li>
+                <li>אילו שכנים ישתנו אם תלחץ כאן?</li>
+                <li>מה יקרה אם תעבוד שורה אחרי שורה?</li>
+                <li>איזה מהלך קודם גרם לשיפור, ואיזה מהלך בלבל את הלוח?</li>
+            </ul>
+        </section>
+
+        <p class="footer-note">
+            הדף מיועד להדפסה או לפתיחה מקומית לצד המשחק.
+        </p>
+        <p class="copyright">© כל הזכויות שמורות לשלומי נויפלד</p>
+    </main>
+</body>
+</html>
