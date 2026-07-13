@@ -40,6 +40,30 @@
             min-height: 100vh;
             color: #fff;
             overflow-x: hidden;
+            padding-left: max(2.75rem, env(safe-area-inset-left)) !important;
+        }
+
+        #limit-warning-modal,
+        #reward-modal,
+        #fail-modal,
+        #game-win-modal,
+        #text-tip-modal,
+        #teacher-help-modal,
+        #instructions-modal {
+            padding-left: max(2.75rem, env(safe-area-inset-left)) !important;
+        }
+
+        @media (min-width: 768px) {
+            body,
+            #limit-warning-modal,
+            #reward-modal,
+            #fail-modal,
+            #game-win-modal,
+            #text-tip-modal,
+            #teacher-help-modal,
+            #instructions-modal {
+                padding-left: max(3.5rem, env(safe-area-inset-left)) !important;
+            }
         }
 
         .retro-title {
@@ -262,32 +286,27 @@
 
         .site-credit {
             position: fixed;
-            inset-inline: 0;
-            bottom: max(0.35rem, env(safe-area-inset-bottom));
+            left: max(0.55rem, env(safe-area-inset-left));
+            top: 50%;
             z-index: 80;
-            text-align: center;
+            width: max-content;
             color: rgba(148, 163, 184, 0.86);
-            font-size: 0.65rem;
+            font-size: 0.62rem;
             font-weight: 700;
             line-height: 1;
             pointer-events: none;
             text-shadow: 0 2px 6px #000;
+            transform: translateY(-50%) rotate(-90deg);
+            transform-origin: left center;
+            white-space: nowrap;
         }
 
         @media (min-width: 768px) {
             .site-credit {
-                bottom: max(0.6rem, env(safe-area-inset-bottom));
+                left: max(0.75rem, env(safe-area-inset-left));
                 font-size: 0.75rem;
             }
         }
-
-        @media (max-height: 680px) {
-            .site-credit {
-                bottom: max(0.25rem, env(safe-area-inset-bottom));
-                opacity: 0.74;
-            }
-        }
-
         /* Blink utility */
         @keyframes blink { 50% { opacity: 0; } }
         .animate-blink { animation: blink 1s steps(1, end) infinite; }
