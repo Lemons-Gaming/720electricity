@@ -260,6 +260,34 @@
         .btn-purple { background-color: #7e22ce; border-color: #d8b4fe #4c1d95 #4c1d95 #d8b4fe; }
         .btn-gray { background-color: #475569; border-color: #cbd5e1 #0f172a #0f172a #cbd5e1; }
 
+        .site-credit {
+            position: fixed;
+            inset-inline: 0;
+            bottom: max(0.35rem, env(safe-area-inset-bottom));
+            z-index: 80;
+            text-align: center;
+            color: rgba(148, 163, 184, 0.86);
+            font-size: 0.65rem;
+            font-weight: 700;
+            line-height: 1;
+            pointer-events: none;
+            text-shadow: 0 2px 6px #000;
+        }
+
+        @media (min-width: 768px) {
+            .site-credit {
+                bottom: max(0.6rem, env(safe-area-inset-bottom));
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-height: 680px) {
+            .site-credit {
+                bottom: max(0.25rem, env(safe-area-inset-bottom));
+                opacity: 0.74;
+            }
+        }
+
         /* Blink utility */
         @keyframes blink { 50% { opacity: 0; } }
         .animate-blink { animation: blink 1s steps(1, end) infinite; }
@@ -533,7 +561,7 @@
         </div>
     </div>
 
-    <footer class="w-full max-w-5xl mx-auto mt-6 mb-2 text-center text-[10px] md:text-xs text-slate-500 font-bold">
+    <footer class="site-credit" aria-label="זכויות יוצרים">
         © שלומי נויפלד
     </footer>
     <script>
