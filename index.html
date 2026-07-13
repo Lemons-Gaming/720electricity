@@ -40,30 +40,6 @@
             min-height: 100vh;
             color: #fff;
             overflow-x: hidden;
-            padding-left: max(2.75rem, env(safe-area-inset-left)) !important;
-        }
-
-        #limit-warning-modal,
-        #reward-modal,
-        #fail-modal,
-        #game-win-modal,
-        #text-tip-modal,
-        #teacher-help-modal,
-        #instructions-modal {
-            padding-left: max(2.75rem, env(safe-area-inset-left)) !important;
-        }
-
-        @media (min-width: 768px) {
-            body,
-            #limit-warning-modal,
-            #reward-modal,
-            #fail-modal,
-            #game-win-modal,
-            #text-tip-modal,
-            #teacher-help-modal,
-            #instructions-modal {
-                padding-left: max(3.5rem, env(safe-area-inset-left)) !important;
-            }
         }
 
         .retro-title {
@@ -285,28 +261,22 @@
         .btn-gray { background-color: #475569; border-color: #cbd5e1 #0f172a #0f172a #cbd5e1; }
 
         .site-credit {
-            position: fixed;
-            left: max(0.55rem, env(safe-area-inset-left));
-            top: 50%;
-            z-index: 80;
-            width: max-content;
+            width: 100%;
+            text-align: left;
             color: rgba(148, 163, 184, 0.86);
-            font-size: 0.62rem;
+            font-size: 0.7rem;
             font-weight: 700;
-            line-height: 1;
-            pointer-events: none;
+            line-height: 1.2;
             text-shadow: 0 2px 6px #000;
-            transform: translateY(-50%) rotate(-90deg);
-            transform-origin: left center;
-            white-space: nowrap;
+            padding-left: 0.25rem;
         }
 
         @media (min-width: 768px) {
             .site-credit {
-                left: max(0.75rem, env(safe-area-inset-left));
                 font-size: 0.75rem;
             }
         }
+
         /* Blink utility */
         @keyframes blink { 50% { opacity: 0; } }
         .animate-blink { animation: blink 1s steps(1, end) infinite; }
@@ -369,6 +339,7 @@
                     </button>
                 </div>
             </div>
+
         </section>
 
         <!-- Help & Tips Console Panel -->
@@ -434,6 +405,10 @@
 
                 </div>
             </div>
+
+            <footer class="site-credit" aria-label="זכויות יוצרים">
+                © שלומי נויפלד
+            </footer>
         </section>
     </main>
 
@@ -580,9 +555,6 @@
         </div>
     </div>
 
-    <footer class="site-credit" aria-label="זכויות יוצרים">
-        © שלומי נויפלד
-    </footer>
     <script>
         // Web Audio Synthesizer (Retro Sounds Generator)
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
